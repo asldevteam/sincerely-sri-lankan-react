@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, ChevronDown, MapPin, Calendar, Clock, Users } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Calendar, Clock, MapPin, Search, Users } from 'lucide-react';
+import { useState } from 'react';
+import DropdownComponent from './DropdownComponent';
+import { Calendar22 } from './CalanderInputComponent';
 
 interface Opportunity {
   id: string;
@@ -108,13 +109,16 @@ const OpportunitySearch = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const OpportunityCard = ({ opportunity }: { opportunity: Opportunity }) => (
-    <Card className="testimonial-card  p-0  xl:min-w-[300px] hover:border-white hover:border-2 border-2 transition-colors duration-300 hover:shadow-lg">
+    <Card className="testimonial-card  p-0   hover:border-white hover:border-2 border-2 transition-colors duration-300 hover:shadow-lg">
       <CardContent className=" p-[20px]">
-        <Badge className="mb-3">{opportunity.category}</Badge>
+        <div className='flex lg:flex-row justify-between flex-col-reverse'>
+
+       
+      
         <h3 className="text-lg font-bold mb-3">{opportunity.title}</h3>
-        <div className=' min-h-[200px]'>
+       <Badge className="mb-3 w-auto max-w-fit">{opportunity.category}</Badge>  </div>  <div >
           <p className="text-sm text-muted-foreground mb-4 ">{opportunity.description}</p>
-          <div className="space-y-2 text-sm ">
+          <div className=" text-sm gap-x-4 flex flex-col md:flex-row">
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4" />
               <span>{opportunity.location}</span>
@@ -140,6 +144,13 @@ const OpportunitySearch = () => {
     </Card>
   );
 
+  const [location, setLocation] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [duration, setDuration] = useState('');
+  const [category, setCategory] = useState('');
+  const locationOptions = ["Mirissa Beach", "Kandy", "Yala National Park", "Ella", "Nuwara Eliya", "Galle", "Sigiriya"]
+  const durationOptions = ["1 day", "2 days", "3 days", "1 week", "2 weeks"]
+  const categoryOptions = ["Education", "Agriculture", "Arts", "Tourism"]
   return (
     <section id="opportunities" className="py-20 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
@@ -182,38 +193,33 @@ const OpportunitySearch = () => {
 
                 <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
 
-                  <div className='flex flex-col w-full  '>
-                    <div className='pl-2 mb-2'>Location </div>
+                  <DropdownComponent
+                    label="Location"
+                    options={locationOptions}
+                    selectedOption={location}
+                    onSelect={setLocation}
+                  />
 
-                    <div className='w-full '>
+            <Calendar22
+            label='Start Date'
+            date={startDate ? new Date(startDate) : undefined}
+            setDate={(date) => setStartDate(date ? date.toISOString().split('T')[0] : '')}
+            
+            />
 
-                      <DropdownMenu >
-                        <DropdownMenuTrigger asChild className='w-full'>
-                          <Button variant="outline" className="w-full justify-between">
-                            Duration
-                            <ChevronDown className="ml-2 h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className='w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px]'>
-                          <DropdownMenuLabel>Duration Options</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>1-3 hours</DropdownMenuItem>
-                          <DropdownMenuItem>Half day (4-6 hours)</DropdownMenuItem>
-                          <DropdownMenuItem>Full day (8+ hours)</DropdownMenuItem>
-                          <DropdownMenuItem>2-3 days</DropdownMenuItem>
-                          <DropdownMenuItem>1 week</DropdownMenuItem>
-                          <DropdownMenuItem>2+ weeks</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                  <DropdownComponent
+                    label="Duration"
+                    options={durationOptions}
+                    selectedOption={duration}
+                    onSelect={setDuration}
+                  />
 
-                    </div>
-
-
-
-                  </div>
-
-                  <Input type="date" placeholder="Start Date" />
-                  <Input placeholder="Duration" />
+                  <DropdownComponent
+                    label="Category"
+                    options={categoryOptions}
+                    selectedOption={category}
+                    onSelect={setCategory}
+                  />
                 </div>
 
               </CardContent>
@@ -224,11 +230,13 @@ const OpportunitySearch = () => {
         {/* Search Results */}
         <div>
           <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-[20px]">
+          <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+<div className='flex flex-col gap-y-[10px] pr-[10px]'>
+    
             {searchResults.map((result) => (
               <OpportunityCard key={result.id} opportunity={result} />
             ))}
-          </div>
+           </div>    </div>
         </div>
       </div>
     </section>
