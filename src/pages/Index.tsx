@@ -1,7 +1,5 @@
 import HeroSection from '@/components/HeroSection';
-import ExploreSection from '@/components/ExploreSection';
 import InteractiveMap from '@/components/InteractiveMap';
-import FeaturedLocations from '@/components/FeaturedLocations';
 import StoriesSection from '@/components/StoriesSection';
 import OpportunitySearch from '@/components/OpportunitySearch';
 import FAQSection from '@/components/FAQSection';
@@ -13,14 +11,12 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
       
-      {/* Explore Sri Lanka Section */}
-      <ExploreSection />
+ 
       
       {/* Interactive Map Section */}
       <InteractiveMap />
       
-      {/* Featured Locations / Activities */}
-      <FeaturedLocations />
+
       
       {/* Stories Section */}
       <StoriesSection />

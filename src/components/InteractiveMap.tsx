@@ -13,7 +13,7 @@ interface Destination {
   description: string;
   highlights: string[];
   duration: string;
-  popularity: number;
+
   videoUrl?: string;
   images: string[];
 }
@@ -27,7 +27,8 @@ const destinations: Destination[] = [
     description: 'Ancient rock fortress with breathtaking frescoes and panoramic views.',
     highlights: ['Ancient Architecture', 'Mirror Wall', '5th Century Frescoes'],
     duration: '4-6 hours',
-    popularity: 5,
+
+
     images: ['/placeholder.svg']
   },
   {
@@ -38,7 +39,7 @@ const destinations: Destination[] = [
     description: 'Sacred Buddhist temple housing the relic of Buddha\'s tooth.',
     highlights: ['Sacred Relic', 'Cultural Shows', 'Royal Palace'],
     duration: '3-4 hours',
-    popularity: 5,
+
     images: ['/placeholder.svg']
   },
   {
@@ -49,40 +50,40 @@ const destinations: Destination[] = [
     description: 'Scenic hill station with hiking trails and colonial charm.',
     highlights: ['Hiking Trails', 'Tea Plantations', 'Train Rides'],
     duration: 'Full day',
-    popularity: 4,
+
     images: ['/placeholder.svg']
   },
   {
     id: 'galle',
     name: 'Galle Fort',
-    position: { x: 35, y: 80 },
+    position: { x: 50, y: 85 },
     type: 'cultural',
     description: 'Dutch colonial fort with cobblestone streets and ocean views.',
     highlights: ['Colonial Architecture', 'Art Galleries', 'Sunset Views'],
     duration: '2-3 hours',
-    popularity: 4,
+
     images: ['/placeholder.svg']
   },
   {
     id: 'mirissa',
     name: 'Mirissa Beach',
-    position: { x: 40, y: 85 },
+    position: { x: 60, y: 80 },
     type: 'beach',
     description: 'Perfect for whale watching and pristine beach relaxation.',
     highlights: ['Whale Watching', 'Surfing', 'Beach Parties'],
     duration: 'Full day',
-    popularity: 4,
+
     images: ['/placeholder.svg']
   },
   {
     id: 'yala',
     name: 'Yala National Park',
-    position: { x: 75, y: 85 },
+    position: { x: 65, y: 55 },
     type: 'nature',
     description: 'Wildlife safari destination famous for leopards and elephants.',
     highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
     duration: 'Half/Full day',
-    popularity: 5,
+
     images: ['/placeholder.svg']
   }
 ];
@@ -120,7 +121,7 @@ const InteractiveMap = () => {
             Explore Sri Lanka
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Click on any destination to discover immersive experiences, hidden gems, and cultural treasures 
+            Click on any destination to discover immersive experiences, hidden gems, and cultural treasures
             that make Sri Lanka the pearl of the Indian Ocean.
           </p>
         </div>
@@ -129,39 +130,39 @@ const InteractiveMap = () => {
           {/* Interactive Map */}
           <div className="lg:col-span-2">
             <div className="map-container relative h-[600px] lg:h-[700px] bg-cover bg-center rounded-2xl overflow-hidden border border-border/50">
-              <img 
-                src={mapImage} 
-                alt="Interactive Sri Lanka Map" 
+              <img
+                src={mapImage}
+                alt="Interactive Sri Lanka Map"
                 className="w-full h-full object-cover"
               />
-              
+
               {/* Destination Markers */}
               {destinations.map((destination) => (
                 <div
                   key={destination.id}
-                  className={`destination-marker ${getTypeColor(destination.type)} transform transition-all duration-300 ${
-                    hoveredDestination === destination.id ? 'scale-150' : 'scale-100'
-                  }`}
-                  style={{ 
-                    left: `${destination.position.x}%`, 
-                    top: `${destination.position.y}%` 
+                  className={`destination-marker ${getTypeColor(destination.type)} transform transition duration-500 animate-pulse ${hoveredDestination === destination.id ? 'scale-150' : 'scale-100'
+                    }`}
+                  style={{
+                    left: `${destination.position.x}%`,
+                    top: `${destination.position.y}%`
                   }}
                   onClick={() => setSelectedDestination(destination)}
                   onMouseEnter={() => setHoveredDestination(destination.id)}
                   onMouseLeave={() => setHoveredDestination(null)}
                 >
-                  <MapPin className="w-4 h-4 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                  
+                  <MapPin className="w-4 h-4 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " />
+
                   {/* Hover Tooltip */}
                   {hoveredDestination === destination.id && (
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 whitespace-nowrap animate-fade-in">
+                    <div className="z-10 absolute bottom-full bg-black left-1/2 -translate-x-1/2 mb-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 whitespace-nowrap">
                       <p className="font-semibold text-sm">{destination.name}</p>
                       <p className="text-xs text-muted-foreground capitalize">{destination.type}</p>
                     </div>
                   )}
                 </div>
+
               ))}
-              
+
               {/* Map Legend */}
               <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg p-4 border border-border/50">
                 <h3 className="font-semibold mb-3 text-sm">Destination Types</h3>
@@ -180,38 +181,27 @@ const InteractiveMap = () => {
           {/* Destination Details Panel */}
           <div className="lg:col-span-1">
             {selectedDestination ? (
-              <Card className="testimonial-card h-fit">
-                <CardContent className="p-6">
+              <Card className="testimonial-card h-full ">
+                <CardContent className="p-2 h-full ">
+                  <div>
+
+                    <img src={selectedDestination.images[0]} alt={selectedDestination.name} className="w-full h-full  rounded-lg mb-4" />
+
+                  </div>
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold mb-2">{selectedDestination.name}</h3>
-                      <Badge className={getTypeBadgeColor(selectedDestination.type)}>
+                      <Badge className={`${getTypeBadgeColor(selectedDestination.type)} hover:${getTypeBadgeColor(selectedDestination.type)} cursor-default`}>
                         {selectedDestination.type}
                       </Badge>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedDestination(null)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+
                   </div>
-                  
+
                   <p className="text-muted-foreground mb-4">{selectedDestination.description}</p>
-                  
-                  {/* Rating and Duration */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-primary fill-current" />
-                      <span className="text-sm font-medium">{selectedDestination.popularity}/5</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{selectedDestination.duration}</span>
-                    </div>
-                  </div>
-                  
+
+
+
                   {/* Highlights */}
                   <div className="mb-6">
                     <h4 className="font-semibold mb-2">Highlights</h4>
@@ -223,17 +213,8 @@ const InteractiveMap = () => {
                       ))}
                     </div>
                   </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      <Play className="w-4 h-4 mr-2" />
-                      Watch Virtual Tour
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      Add to Itinerary
-                    </Button>
-                  </div>
+
+
                 </CardContent>
               </Card>
             ) : (
@@ -242,7 +223,7 @@ const InteractiveMap = () => {
                   <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Discover Destinations</h3>
                   <p className="text-muted-foreground text-sm">
-                    Click on any marker on the map to explore detailed information, 
+                    Click on any marker on the map to explore detailed information,
                     virtual tours, and insider tips for each destination.
                   </p>
                 </CardContent>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, ChevronDown, MapPin, Calendar, Clock, Users } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 
 interface Opportunity {
   id: string;
@@ -46,6 +47,16 @@ const featuredOpportunities: Opportunity[] = [
     participants: '10 spots',
     category: 'Nature',
     description: 'Assist in wildlife monitoring and conservation'
+  },
+  {
+    id: '4',
+    title: 'Teaching English',
+    location: 'Ella',
+    date: 'Jan 25, 2025',
+    duration: '5 days',
+    participants: '8 spots',
+    category: 'Education',
+    description: 'Teach English to local school children'
   }
 ];
 
@@ -97,27 +108,29 @@ const OpportunitySearch = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const OpportunityCard = ({ opportunity }: { opportunity: Opportunity }) => (
-    <Card className="testimonial-card hover-scale">
-      <CardContent className="p-6">
+    <Card className="testimonial-card  p-0  xl:min-w-[300px] hover:border-white hover:border-2 border-2 transition-colors duration-300 hover:shadow-lg">
+      <CardContent className=" p-[20px]">
         <Badge className="mb-3">{opportunity.category}</Badge>
         <h3 className="text-lg font-bold mb-3">{opportunity.title}</h3>
-        <p className="text-sm text-muted-foreground mb-4">{opportunity.description}</p>
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            <span>{opportunity.location}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="w-4 h-4" />
-            <span>{opportunity.date}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="w-4 h-4" />
-            <span>{opportunity.duration}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Users className="w-4 h-4" />
-            <span>{opportunity.participants}</span>
+        <div className=' min-h-[200px]'>
+          <p className="text-sm text-muted-foreground mb-4 ">{opportunity.description}</p>
+          <div className="space-y-2 text-sm ">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <MapPin className="w-4 h-4" />
+              <span>{opportunity.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="w-4 h-4" />
+              <span>{opportunity.date}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock className="w-4 h-4" />
+              <span>{opportunity.duration}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Users className="w-4 h-4" />
+              <span>{opportunity.participants}</span>
+            </div>
           </div>
         </div>
         <Button className="w-full mt-4 bg-primary hover:bg-primary/90">
@@ -131,37 +144,19 @@ const OpportunitySearch = () => {
     <section id="opportunities" className="py-20 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Info Opportunity Tools
+          Find Your Opportunity
         </h2>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {/* Featured RV Opportunities */}
-          <div className="lg:col-span-1">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle>Featured RV Opportunities</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {featuredOpportunities.map((opp) => (
-                  <div 
-                    key={opp.id}
-                    className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                  >
-                    <h4 className="font-semibold mb-1">{opp.title}</h4>
-                    <p className="text-sm text-muted-foreground mb-2">{opp.location}</p>
-                    <Badge variant="secondary" className="text-xs">{opp.category}</Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
+        <div className="flex flex-col gap-y-[20px] ">
+
+
 
           {/* Opportunity Search */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Opportunity Search</CardTitle>
-              </CardHeader>
+          <div className="lg:col-span-2 mb-[20px]">
+            <div className='text-[25px] font-bold mb-[20px]'>Search for more opportunities
+            </div>
+            <Card className='pt-[25px]'>
+
               <CardContent className="space-y-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -176,23 +171,51 @@ const OpportunitySearch = () => {
                   <Button>Search</Button>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
+                <div
+
+                  className="w-full bg-primary text-black text-center p-2 rounded-md "
+
                 >
                   Advanced Options
-                  <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-                </Button>
+                </div>
 
-                {showAdvanced && (
-                  <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
-                    <Input placeholder="Location" />
-                    <Input placeholder="Category" />
-                    <Input type="date" placeholder="Start Date" />
-                    <Input placeholder="Duration" />
+
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+
+                  <div className='flex flex-col w-full  '>
+                    <div className='pl-2 mb-2'>Location </div>
+
+                    <div className='w-full '>
+
+                      <DropdownMenu >
+                        <DropdownMenuTrigger asChild className='w-full'>
+                          <Button variant="outline" className="w-full justify-between">
+                            Duration
+                            <ChevronDown className="ml-2 h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px]'>
+                          <DropdownMenuLabel>Duration Options</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>1-3 hours</DropdownMenuItem>
+                          <DropdownMenuItem>Half day (4-6 hours)</DropdownMenuItem>
+                          <DropdownMenuItem>Full day (8+ hours)</DropdownMenuItem>
+                          <DropdownMenuItem>2-3 days</DropdownMenuItem>
+                          <DropdownMenuItem>1 week</DropdownMenuItem>
+                          <DropdownMenuItem>2+ weeks</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+
+                    </div>
+
+
+
                   </div>
-                )}
+
+                  <Input type="date" placeholder="Start Date" />
+                  <Input placeholder="Duration" />
+                </div>
+
               </CardContent>
             </Card>
           </div>
@@ -201,7 +224,7 @@ const OpportunitySearch = () => {
         {/* Search Results */}
         <div>
           <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-[20px]">
             {searchResults.map((result) => (
               <OpportunityCard key={result.id} opportunity={result} />
             ))}

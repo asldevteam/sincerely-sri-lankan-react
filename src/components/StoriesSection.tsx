@@ -51,7 +51,7 @@ const StoriesSection = () => {
     <section id="stories" className="py-20 px-4 bg-background">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Stories Section
+         Testimonials & Stories
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
@@ -74,20 +74,20 @@ const StoriesSection = () => {
           </div>
 
           {/* Text Area */}
-          <div className="space-y-6">
+          <div className="space-y-6 ">
             <h3 className="text-3xl font-bold text-foreground">
               {story.title}
             </h3>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed lg:min-h-[150px]">
               {story.content}
             </p>
             <div className="flex items-center gap-4 pt-4">
               <Button
-                variant="outline"
+               className='bg-transparent hover:bg-primary '
                 size="icon"
                 onClick={prevStory}
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4 text-white" />
               </Button>
               <div className="flex gap-2">
                 {stories.map((_, index) => (
@@ -103,11 +103,12 @@ const StoriesSection = () => {
                 ))}
               </div>
               <Button
-                variant="outline"
+
+             className='bg-transparent hover:bg-primary '
                 size="icon"
                 onClick={nextStory}
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-white border-white " />
               </Button>
             </div>
           </div>
