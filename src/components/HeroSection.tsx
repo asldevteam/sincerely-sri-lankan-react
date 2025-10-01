@@ -8,7 +8,7 @@ const HeroSection = () => {
   const [currentText, setCurrentText] = useState(0);
   
   const heroTexts = [
-    "Sincerely Sri Lanka",
+    "Sincerely\nSri Lankan",
     "Discover Paradise",
     "Experience Culture",
     "Create Memories"
@@ -48,7 +48,11 @@ const HeroSection = () => {
             key={currentText}
             className="text-6xl md:text-8xl lg:text-9xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-fade-in"
           >
-            {heroTexts[currentText]}
+            {heroTexts[currentText].includes('\n')
+              ? heroTexts[currentText].split('\n').map((line, idx) => (
+                  <span key={idx} className="block">{line}</span>
+                ))
+              : heroTexts[currentText]}
           </h1>
         </div>
         
@@ -59,7 +63,7 @@ const HeroSection = () => {
         </p>
         
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+        <div className=" hidden flex-col sm:flex-row gap-6 justify-center items-center mb-16">
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg rounded-full glow-primary transform hover:scale-105 transition-all duration-300"
