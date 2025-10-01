@@ -79,7 +79,7 @@ const FAQSection = () => {
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq) => (
                 <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
-                  <AccordionTrigger className="text-left hover:text-primary transition-colors duration-300">
+                  <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
                     {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
@@ -91,26 +91,7 @@ const FAQSection = () => {
           </CardContent>
         </Card>
 
-        {/* Contact CTA */}
-        <div className="text-center mt-12">
-          <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4">Still have questions?</h3>
-              <p className="text-muted-foreground mb-6">
-                Our travel experts are here to help you plan the perfect Sri Lankan adventure.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-primary hover:bg-primary/90">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Chat with Expert
-                </Button>
-                <Button variant="outline">
-                  Ask a Question
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+
       </div>
     </section>
   );
