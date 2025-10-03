@@ -122,8 +122,7 @@ const OpportunitySearch = () => {
 
           {/* Opportunity Search */}
           <div className="lg:col-span-2 mb-[20px]">
-            <div className='text-[25px] font-bold mb-[20px]'>Search for more opportunities
-            </div>
+       
             <Card className='pt-[25px]'>
 
               <CardContent className="space-y-4">
