@@ -6,8 +6,10 @@ interface Story {
   id: string;
   title: string;
   content: string;
-  mediaUrl: string;
-  mediaType: 'image' | 'video';
+  ImageUrl: string;
+  postBy: string;
+  visitorCountry: string;
+
 }
 
 const stories: Story[] = [
@@ -15,22 +17,28 @@ const stories: Story[] = [
     id: '1',
     title: 'Ancient Wonders',
     content: 'Discover the rich cultural heritage of Sri Lanka through its ancient monuments and archaeological sites. From the magnificent Sigiriya Rock Fortress to the sacred Temple of the Tooth, every destination tells a story of centuries past.',
-    mediaUrl: '/placeholder.svg',
-    mediaType: 'image'
+    ImageUrl: '/images/AncientWonders.webp',
+    postBy: 'John Doe',
+    visitorCountry: 'USA'
+
   },
   {
     id: '2',
     title: 'Beach Paradise',
     content: 'Experience the pristine beaches and crystal-clear waters of Sri Lanka. From surfing in Arugam Bay to whale watching in Mirissa, the coastal beauty offers endless adventures and relaxation.',
-    mediaUrl: '/placeholder.svg',
-    mediaType: 'image'
+    ImageUrl: '/images/BeachParadise.webp',
+    postBy: 'Jane Smith',
+    visitorCountry: 'UK'
+
   },
   {
     id: '3',
     title: 'Wildlife Safari',
     content: 'Embark on thrilling wildlife safaris through lush national parks. Spot majestic leopards, gentle elephants, and exotic birds in their natural habitats across Yala and Udawalawe.',
-    mediaUrl: '/placeholder.svg',
-    mediaType: 'image'
+    ImageUrl: '/images/WildSafari.webp',
+    postBy: 'Alice Johnson',
+    visitorCountry: 'Canada'
+
   }
 ];
 
@@ -57,19 +65,13 @@ const StoriesSection = () => {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           {/* Media Area */}
           <div className="relative h-[400px] md:h-[500px] bg-muted rounded-lg overflow-hidden">
-            {story.mediaType === 'image' ? (
+          
               <img 
-                src={story.mediaUrl} 
+                src={story.ImageUrl} 
                 alt={story.title}
                 className="w-full h-full object-cover"
               />
-            ) : (
-              <video 
-                src={story.mediaUrl}
-                className="w-full h-full object-cover"
-                controls
-              />
-            )}
+           
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           </div>
 
@@ -80,6 +82,9 @@ const StoriesSection = () => {
             </h3>
             <p className="text-lg text-muted-foreground leading-relaxed lg:min-h-[150px]">
               {story.content}
+            </p>
+            <p className="text-md text-muted-foreground ">
+              {story.postBy}, {story.visitorCountry}
             </p>
             <div className="flex items-center gap-4 pt-4">
               <Button

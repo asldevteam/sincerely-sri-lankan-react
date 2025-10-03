@@ -1,3 +1,4 @@
+import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import InteractiveMap from '@/components/InteractiveMap';
 import StoriesSection from '@/components/StoriesSection';
@@ -8,24 +9,33 @@ import Footer from '@/components/Footer';
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Navigation */}
+      <Navbar />
       
- 
+      {/* Hero Section */}
+      <section id="home">
+        <HeroSection />
+      </section>
       
       {/* Interactive Map Section */}
-      <InteractiveMap />
-      
+      <section id="destinations">
+        <InteractiveMap />
+      </section>
 
-      
       {/* Stories Section */}
-      <StoriesSection />
+      <section id="stories">
+        <StoriesSection />
+      </section>
       
       {/* Opportunity Search Tools */}
-      <OpportunitySearch />
+      <section id="experiences">
+        <OpportunitySearch />
+      </section>
       
       {/* FAQ Section */}
-      <FAQSection />
+      <section id="faq">
+        <FAQSection />
+      </section>
       
       {/* Footer with Story Sharing */}
       <Footer />
