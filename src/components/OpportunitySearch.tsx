@@ -6,8 +6,9 @@ import { Calendar, Clock, MapPin, Search, Users } from 'lucide-react';
 import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 import { Calendar22 } from './CalanderInputComponent';
+import OpportunityCard from './OportunityCard';
 
-interface Opportunity {
+export interface Opportunity {
   id: string;
   title: string;
   location: string;
@@ -16,50 +17,10 @@ interface Opportunity {
   participants: string;
   category: string;
   description: string;
+  slots: { id: number; startingDate: string; endDate: string }[];
+  applyLink: string;
 }
 
-const featuredOpportunities: Opportunity[] = [
-  {
-    id: '1',
-    title: 'Beach Cleanup Volunteer',
-    location: 'Mirissa Beach',
-    date: 'Jan 15, 2025',
-    duration: '3 hours',
-    participants: '20 spots',
-    category: 'Environmental',
-    description: 'Join us in cleaning up beautiful Mirissa Beach'
-  },
-  {
-    id: '2',
-    title: 'Temple Restoration',
-    location: 'Kandy',
-    date: 'Jan 20, 2025',
-    duration: '2 days',
-    participants: '15 spots',
-    category: 'Cultural',
-    description: 'Help restore ancient temple structures'
-  },
-  {
-    id: '3',
-    title: 'Wildlife Conservation',
-    location: 'Yala National Park',
-    date: 'Feb 5, 2025',
-    duration: '1 week',
-    participants: '10 spots',
-    category: 'Nature',
-    description: 'Assist in wildlife monitoring and conservation'
-  },
-  {
-    id: '4',
-    title: 'Teaching English',
-    location: 'Ella',
-    date: 'Jan 25, 2025',
-    duration: '5 days',
-    participants: '8 spots',
-    category: 'Education',
-    description: 'Teach English to local school children'
-  }
-];
 
 const searchResults: Opportunity[] = [
   {
@@ -70,7 +31,13 @@ const searchResults: Opportunity[] = [
     duration: '5 days',
     participants: '8 spots',
     category: 'Education',
-    description: 'Teach English to local school children'
+    description: 'Teach English to local school children',
+    slots:[
+      { id:1, startingDate:'2025/01/25', endDate:'2025/01/30' }
+     
+    ],
+    applyLink: 'https://example.com/apply-teaching-english'
+
   },
   {
     id: '5',
@@ -80,7 +47,18 @@ const searchResults: Opportunity[] = [
     duration: '1 week',
     participants: '12 spots',
     category: 'Agriculture',
-    description: 'Learn and help with organic tea farming'
+    description: 'Learn and help with organic tea farming',
+    slots:[
+      { id:1, startingDate:'2025/02/01', endDate:'2025/02/08' },
+      { id:2, startingDate:'2025/03/05', endDate:'2025/03/12' },
+      {id: 3, startingDate:'2025/04/10', endDate:'2025/04/17' },
+      {id:4, startingDate:'2025/05/01', endDate:'2025/05/08' },
+      {id:5, startingDate:'2025/06/10', endDate:'2025/06/17' },
+      {id:6, startingDate:'2025/07/15', endDate:'2025/07/22' },
+      {id:7, startingDate:'2025/08/05', endDate:'2025/08/12' },
+      {id:8, startingDate:'2025/09/10', endDate:'2025/09/17' }
+    ],
+    applyLink: 'https://example.com/apply-organic-farming'
   },
   {
     id: '6',
@@ -90,7 +68,13 @@ const searchResults: Opportunity[] = [
     duration: '4 days',
     participants: '20 spots',
     category: 'Arts',
-    description: 'Create murals with local artists'
+    description: 'Create murals with local artists',
+    slots:[
+      { id:1, startingDate:'2025/02/10', endDate:'2025/02/14' },
+      { id:2, startingDate:'2025/03/15', endDate:'2025/03/19' },
+      {id:3, startingDate:'2025/04/20', endDate:'2025/04/24' }
+    ],
+    applyLink: 'https://example.com/apply-community-art'
   },
   {
     id: '7',
@@ -100,49 +84,21 @@ const searchResults: Opportunity[] = [
     duration: '3 days',
     participants: '15 spots',
     category: 'Tourism',
-    description: 'Train to become a certified eco-tourism guide'
+    description: 'Train to become a certified eco-tourism guide',
+    slots:[
+      { id:1, startingDate:'2025/02/15', endDate:'2025/02/18' },
+      { id:2, startingDate:'2025/03/20', endDate:'2025/03/23' },
+      {id:3, startingDate:'2025/04/25', endDate:'2025/04/28' }
+    ],
+    applyLink: 'https://example.com/apply-eco-tourism'
   }
 ];
 
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const OpportunityCard = ({ opportunity }: { opportunity: Opportunity }) => (
-    <Card className="testimonial-card  p-0   hover:border-white hover:border-2 border-2 transition-colors duration-300 hover:shadow-lg">
-      <CardContent className=" p-[20px]">
-        <div className='flex lg:flex-row justify-between flex-col-reverse'>
 
-       
-      
-        <h3 className="text-lg font-bold mb-3">{opportunity.title}</h3>
-       <Badge className="mb-3 w-auto max-w-fit">{opportunity.category}</Badge>  </div>  <div >
-          <p className="text-sm text-muted-foreground mb-4 ">{opportunity.description}</p>
-          <div className=" text-sm gap-x-4 flex flex-col md:flex-row">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="w-4 h-4" />
-              <span>{opportunity.location}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Calendar className="w-4 h-4" />
-              <span>{opportunity.date}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>{opportunity.duration}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="w-4 h-4" />
-              <span>{opportunity.participants}</span>
-            </div>
-          </div>
-        </div>
-        <Button className="w-full mt-4 bg-primary hover:bg-primary/90">
-          Learn More
-        </Button>
-      </CardContent>
-    </Card>
-  );
+
 
   const [location, setLocation] = useState('');
   const [startDate, setStartDate] = useState('');
