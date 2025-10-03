@@ -51,7 +51,7 @@ jobs:
             export APP=${{ secrets.DOCKERHUB_USERNAME }}/asldevteam
             export HOSTPORT=4000
             export TEMP_PORT=8081
-            export CONTAINERPORT=4000
+            export CONTAINERPORT=80
             export TAG=sincerely
 
             ./deploy.sh || exit 1
