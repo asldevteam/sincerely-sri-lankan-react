@@ -1,4 +1,5 @@
-import React from 'react';
+import { RiTwitterXLine } from "react-icons/ri";
+
 import {
   Mail,
   Phone,
@@ -6,7 +7,7 @@ import {
   Instagram,
   Facebook,
   Youtube,
-  Twitter
+ X
 } from 'lucide-react';
 
 const Footer = () => {
@@ -26,10 +27,10 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram', color: 'hover:text-pink-500' },
-    { icon: Facebook, href: '#', label: 'Facebook', color: 'hover:text-blue-500' },
-    { icon: Youtube, href: '#', label: 'YouTube', color: 'hover:text-red-500' },
-    { icon: Twitter, href: '#', label: 'Twitter', color: 'hover:text-blue-400' },
+    { icon: Instagram, href: 'https://www.instagram.com/aiesecinsrilanka?igsh=eGlzYWJnZGc5eWk=', label: 'Instagram', color: 'hover:text-pink-500' },
+    { icon: Facebook, href: 'https://www.facebook.com/AIESECLK', label: 'Facebook', color: 'hover:text-blue-500' },
+    { icon: Youtube, href: 'https://www.youtube.com/@AIESECinSriLanka', label: 'YouTube', color: 'hover:text-red-500' },
+    { icon: RiTwitterXLine, href: 'https://twitter.com/AIESECLK', label: 'Twitter', color: 'hover:text-blue-400' },
   ];
 
   return (
