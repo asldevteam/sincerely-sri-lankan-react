@@ -14,8 +14,8 @@ interface Destination {
   highlights: string[];
   duration: string;
 
-  videoUrl?: string;
-  images: string[];
+  image?: string;
+
 }
 
 const destinations: Destination[] = [
@@ -29,7 +29,7 @@ const destinations: Destination[] = [
     duration: '4-6 hours',
 
 
-    images: ['/placeholder.svg']
+    image: '/images/Sigiriya.webp'
   },
   {
     id: 'kandy',
@@ -40,7 +40,7 @@ const destinations: Destination[] = [
     highlights: ['Sacred Relic', 'Cultural Shows', 'Royal Palace'],
     duration: '3-4 hours',
 
-    images: ['/placeholder.svg']
+    image:"/images/TempleToothRelic.webp"
   },
   {
     id: 'ella',
@@ -51,7 +51,7 @@ const destinations: Destination[] = [
     highlights: ['Hiking Trails', 'Tea Plantations', 'Train Rides'],
     duration: 'Full day',
 
-    images: ['/placeholder.svg']
+    image: '/images/NineArchBridge.webp'
   },
   {
     id: 'galle',
@@ -62,7 +62,7 @@ const destinations: Destination[] = [
     highlights: ['Colonial Architecture', 'Art Galleries', 'Sunset Views'],
     duration: '2-3 hours',
 
-    images: ['/placeholder.svg']
+    image: '/images/GalleFort.webp'
   },
   {
     id: 'mirissa',
@@ -73,7 +73,7 @@ const destinations: Destination[] = [
     highlights: ['Whale Watching', 'Surfing', 'Beach Parties'],
     duration: 'Full day',
 
-    images: ['/placeholder.svg']
+    image: '/images/Mirissa.webp'
   },
   {
     id: 'yala',
@@ -84,7 +84,7 @@ const destinations: Destination[] = [
     highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
     duration: 'Half/Full day',
 
-    images: ['/placeholder.svg']
+    image: '/images/Yala.webp'
   }
 ];
 
@@ -181,11 +181,11 @@ const InteractiveMap = () => {
           {/* Destination Details Panel */}
           <div className="lg:col-span-1">
             {selectedDestination ? (
-              <Card className="testimonial-card h-full ">
+              <Card className="testimonial-card h-fit ">
                 <CardContent className="p-2 h-full ">
                   <div>
 
-                    <img src={selectedDestination.images[0]} alt={selectedDestination.name} className="w-full h-full  rounded-lg mb-4" />
+                    <img src={selectedDestination.image} alt={selectedDestination.name} className="w-full h-full  rounded-lg mb-4" />
 
                   </div>
                   <div className="flex justify-between items-start mb-4">

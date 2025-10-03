@@ -17,7 +17,7 @@ export interface Opportunity {
   participants: string;
   category: string;
   description: string;
-  slots: { id: number; startingDate: string; endDate: string }[];
+  slots: { id: number; startingDate: string; endDate: string , name: string, openings: number }[];
   applyLink: string;
 }
 
@@ -33,7 +33,9 @@ const searchResults: Opportunity[] = [
     category: 'Education',
     description: 'Teach English to local school children',
     slots:[
-      { id:1, startingDate:'2025/01/25', endDate:'2025/01/30' }
+      { id:1, startingDate:'2025/01/25', endDate:'2025/01/30' , name: 'Morning Session', openings: 3 },
+      { id:2, startingDate:'2025/02/15', endDate:'2025/02/20' , name: 'Afternoon Session', openings: 5 },
+      {id:3, startingDate:'2025/03/10', endDate:'2025/03/15' , name: 'Evening Session', openings: 2 } 
      
     ],
     applyLink: 'https://example.com/apply-teaching-english'
@@ -49,14 +51,14 @@ const searchResults: Opportunity[] = [
     category: 'Agriculture',
     description: 'Learn and help with organic tea farming',
     slots:[
-      { id:1, startingDate:'2025/02/01', endDate:'2025/02/08' },
-      { id:2, startingDate:'2025/03/05', endDate:'2025/03/12' },
-      {id: 3, startingDate:'2025/04/10', endDate:'2025/04/17' },
-      {id:4, startingDate:'2025/05/01', endDate:'2025/05/08' },
-      {id:5, startingDate:'2025/06/10', endDate:'2025/06/17' },
-      {id:6, startingDate:'2025/07/15', endDate:'2025/07/22' },
-      {id:7, startingDate:'2025/08/05', endDate:'2025/08/12' },
-      {id:8, startingDate:'2025/09/10', endDate:'2025/09/17' }
+      { id:1, startingDate:'2025/02/01', endDate:'2025/02/08', name: 'Week 1', openings: 4 },
+      { id:2, startingDate:'2025/03/05', endDate:'2025/03/12' , name: 'Week 2', openings: 6 },
+      {id: 3, startingDate:'2025/04/10', endDate:'2025/04/17', name: 'Week 3', openings: 5 },
+      {id:4, startingDate:'2025/05/01', endDate:'2025/05/08' , name: 'Week 4', openings: 3 },
+      {id:5, startingDate:'2025/06/10', endDate:'2025/06/17', name: 'Week 5', openings: 2 },
+      {id:6, startingDate:'2025/07/15', endDate:'2025/07/22', name: 'Week 6', openings: 4 },
+      {id:7, startingDate:'2025/08/05', endDate:'2025/08/12', name: 'Week 7', openings: 1 },
+      {id:8, startingDate:'2025/09/10', endDate:'2025/09/17', name: 'Week 8', openings: 0 }
     ],
     applyLink: 'https://example.com/apply-organic-farming'
   },
@@ -70,9 +72,9 @@ const searchResults: Opportunity[] = [
     category: 'Arts',
     description: 'Create murals with local artists',
     slots:[
-      { id:1, startingDate:'2025/02/10', endDate:'2025/02/14' },
-      { id:2, startingDate:'2025/03/15', endDate:'2025/03/19' },
-      {id:3, startingDate:'2025/04/20', endDate:'2025/04/24' }
+      { id:1, startingDate:'2025/02/10', endDate:'2025/02/14' , name: 'Session 1', openings: 10 },
+      { id:2, startingDate:'2025/03/15', endDate:'2025/03/19' , name: 'Session 2', openings: 8 },
+      {id:3, startingDate:'2025/04/20', endDate:'2025/04/24' , name: 'Session 3', openings: 5 }
     ],
     applyLink: 'https://example.com/apply-community-art'
   },
@@ -86,9 +88,9 @@ const searchResults: Opportunity[] = [
     category: 'Tourism',
     description: 'Train to become a certified eco-tourism guide',
     slots:[
-      { id:1, startingDate:'2025/02/15', endDate:'2025/02/18' },
-      { id:2, startingDate:'2025/03/20', endDate:'2025/03/23' },
-      {id:3, startingDate:'2025/04/25', endDate:'2025/04/28' }
+      { id:1, startingDate:'2025/02/15', endDate:'2025/02/18', name: 'Batch A', openings: 7 },
+      { id:2, startingDate:'2025/03/20', endDate:'2025/03/23', name: 'Batch B', openings: 5 },
+      {id:3, startingDate:'2025/04/25', endDate:'2025/04/28', name: 'Batch C', openings: 3 }
     ],
     applyLink: 'https://example.com/apply-eco-tourism'
   }

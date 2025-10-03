@@ -53,38 +53,32 @@ const OpportunityCard = ({ opportunity }: { opportunity: Opportunity }) => {
 
         </Button>
         {showSlots && (
-          <div className='w-full  mt-5  '>
-            <div className='w-full max-h-[200px] h-full border p-5 border-border rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500'>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-             <Table>
-    
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[100px]">Slot Id</TableHead>
-          <TableHead>Starting Date</TableHead>
-          <TableHead>End Date</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {opportunity.slots.map((slot) => (
-          <TableRow key={slot.id}>
-            <TableCell className="font-medium">{slot.id}</TableCell>
-            <TableCell className="font-medium">{slot.startingDate}</TableCell>
-            <TableCell>{slot.endDate}</TableCell>
-           
-          </TableRow>
-        ))}
-      </TableBody>
-      </Table>
-
-              </div>
-            <Button className="w-full  h-[30px] mt-4 bg-primary hover:bg-primary/90 text-black rounded-sm text-md" onClick={() => window.open(opportunity.applyLink, '_blank')}>
-         Apply Now
-
-        </Button>
+          <div className='w-full mt-5'>
+            <div className='w-full max-h-[200px] border border-border rounded-lg overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500'>
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">Slot Name</TableHead>
+                    <TableHead className="w-[120px]">Starting Date</TableHead>
+                    <TableHead className="w-[120px]">End Date</TableHead>
+                    <TableHead className="w-[80px]">Openings</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {opportunity.slots.map((slot) => (
+                    <TableRow key={slot.id}>
+                      <TableCell className="font-medium">{slot.name}</TableCell>
+                      <TableCell className="font-medium">{slot.startingDate}</TableCell>
+                      <TableCell>{slot.endDate}</TableCell>
+                      <TableCell>{slot.openings}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
+            <Button className="w-full h-[30px] mt-4 bg-primary hover:bg-primary/90 text-black rounded-sm text-md" onClick={() => window.open(opportunity.applyLink, '_blank')}>
+              Apply Now
+            </Button>
           </div>
         )}
       </CardContent>
