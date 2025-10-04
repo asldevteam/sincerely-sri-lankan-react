@@ -252,7 +252,7 @@ const OpportunitySearch = () => {
 
   const handleSearch = async () => {
     // Validate required fields
-    if (!startOfStartDateRange || !endOfStartDateRange || !startOfEndDateRange || !endOfEndDateRange || !category) {
+    if (!startOfStartDateRange || !endOfStartDateRange || !category) {
       setError('Please fill in all date range fields and select a category');
       return;
     }
