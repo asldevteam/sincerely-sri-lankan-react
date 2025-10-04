@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import DropdownComponent from './DropdownComponent';
-
 import OpportunityCard from './OportunityCard';
 import { CalendarInput } from './CalanderInputComponent';
 
@@ -21,40 +20,6 @@ export interface Opportunity {
   slots: { id: number; startingDate: string; endDate: string; name: string; openings: number }[];
   applyLink: string;
 }
-
-// ---------------- Dummy Data (until API loads) ----------------
-const dummyResults: Opportunity[] = [
-  {
-    id: '4',
-    title: 'Teaching English',
-    location: 'Ella',
-    date: 'Jan 25, 2025',
-    duration: '5 days',
-    participants: '8 spots',
-    category: 'Education',
-    description: 'Teach English to local school children',
-    slots: [
-      { id: 1, startingDate: '2025/01/25', endDate: '2025/01/30', name: 'Morning Session', openings: 3 },
-      { id: 2, startingDate: '2025/02/15', endDate: '2025/02/20', name: 'Afternoon Session', openings: 5 },
-    ],
-    applyLink: 'https://example.com/apply-teaching-english',
-  },
-  {
-    id: '5',
-    title: 'Organic Farming',
-    location: 'Nuwara Eliya',
-    date: 'Feb 1, 2025',
-    duration: '1 week',
-    participants: '12 spots',
-    category: 'Agriculture',
-    description: 'Learn and help with organic tea farming',
-    slots: [
-      { id: 1, startingDate: '2025/02/01', endDate: '2025/02/08', name: 'Week 1', openings: 4 },
-      { id: 2, startingDate: '2025/03/05', endDate: '2025/03/12', name: 'Week 2', openings: 6 },
-    ],
-    applyLink: 'https://example.com/apply-organic-farming',
-  },
-];
 
 // ---------------- Fetch Logic ----------------
 const GRAPHQL_ENDPOINT = 'https://gis-api.aiesec.org/graphql';
@@ -146,7 +111,7 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
         id: op.id,
         title: op.title,
         location: op.home_lc?.name || 'Unknown',
-        date: op.slots?.[0]?.start_date || '',
+        date: op.slots?.[0]?.start_date || 'N/A',
         duration, // Use calculated duration
         participants: `${op.openings ?? 0} spots`,
         category: op.programmes?.[0]?.short_name_display || 'N/A',
@@ -176,7 +141,8 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
 // ---------------- Component ----------------
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<Opportunity[]>(dummyResults);
+  const [results, setResults] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [location, setLocation] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
@@ -189,12 +155,13 @@ const OpportunitySearch = () => {
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const apiData = await fetchOpportunities();
-        if (apiData.length > 0) {
-          setResults(apiData);
-        }
+        setResults(apiData);
       } catch (err) {
         console.error('Error fetching API data:', err);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -268,13 +235,24 @@ const OpportunitySearch = () => {
           {/* Search Results */}
           <div>
             <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-            <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-              <div className="flex flex-col gap-y-[10px] pr-[10px]">
-                {results.map((result) => (
-                    <OpportunityCard key={result.id} opportunity={result} />
-                ))}
-              </div>
-            </div>
+            {loading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                  <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
+                </div>
+            ) : (
+                <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                  <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                    {results.length > 0 ? (
+                        results.map((result) => (
+                            <OpportunityCard key={result.id} opportunity={result} />
+                        ))
+                    ) : (
+                        <p className="text-center text-muted-foreground">No opportunities found.</p>
+                    )}
+                  </div>
+                </div>
+            )}
           </div>
         </div>
       </section>
