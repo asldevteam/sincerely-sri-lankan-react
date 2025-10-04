@@ -1,13 +1,12 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Calendar, Clock, MapPin, Search, Users } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 
-import OpportunityCard from './OportunityCard';
 import { CalendarInput } from './CalanderInputComponent';
+import OpportunityCard from './OportunityCard';
 
 
 export interface Opportunity {
