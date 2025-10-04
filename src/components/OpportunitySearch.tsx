@@ -181,20 +181,79 @@ async function fetchOpportunities(filters: {
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Opportunity[]>([]);
+  const [filteredResults, setFilteredResults] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [location, setLocation] = useState('');
+  const [duration, setDuration] = useState('');
+  const [category, setCategory] = useState('');
+  const [sdg, setSdg] = useState('');
+  const [workfield, setWorkfield] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
   const [startOfEndDateRange, setStartOfEndDateRange] = useState('');
   const [endOfEndDateRange, setEndOfEndDateRange] = useState('');
-  const [duration, setDuration] = useState('');
-  const [category, setCategory] = useState('');
+
+  const sdgOptions = [
+    { value: 'no-poverty', label: 'No Poverty' },
+    { value: 'zero-hunger', label: 'Zero Hunger' },
+    { value: 'good-health', label: 'Good Health' },
+    { value: 'quality-education', label: 'Quality Education' },
+    { value: 'gender-equality', label: 'Gender Equality' },
+    { value: 'clean-water', label: 'Clean Water' },
+    { value: 'affordable-energy', label: 'Affordable Energy' },
+    { value: 'decent-work', label: 'Decent Work' },
+    { value: 'industry-innovation', label: 'Industry Innovation' },
+    { value: 'reduced-inequalities', label: 'Reduced Inequalities' },
+    { value: 'sustainable-cities', label: 'Sustainable Cities' },
+    { value: 'responsible-consumption', label: 'Responsible Consumption' },
+    { value: 'climate-action', label: 'Climate Action' },
+    { value: 'life-below-water', label: 'Life Below Water' },
+    { value: 'life-on-land', label: 'Life on Land' },
+    { value: 'peace-justice', label: 'Peace Justice' },
+    { value: 'partnerships-for-goals', label: 'Partnerships for Goals' },
+  ];
+
+  const workFieldOptions = [
+    { value: '54', label: 'Business Administration' },
+    { value: '55', label: 'Information Technology' },
+    { value: '56', label: 'Marketing' },
+    { value: '57', label: 'Engineering' },
+    { value: '59', label: 'Finance' },
+    { value: '60', label: 'Business Development' },
+    { value: '58', label: 'Other' },
+  ];
+
+  const locationOptions = [
+    { value: 'COLOMBO CENTRAL', label: 'Colombo Central' },
+    { value: 'COLOMBO NORTH', label: 'Colombo North' },
+    { value: 'COLOMBO SOUTH', label: 'Colombo South' },
+    { value: 'KANDY', label: 'Kandy' },
+    { value: 'NIBM', label: 'NIBM' },
+    { value: 'NSBM', label: 'NSBM' },
+    { value: 'RAJARATA', label: 'Rajarata' },
+    { value: 'RUHUNA', label: 'Ruhuna' },
+    { value: 'SLIIT', label: 'SLIIT' },
+    { value: 'USJ', label: 'USJ' },
+  ];
+
+  const durationOptions = [
+    { value: '1 day', label: '1 Day' },
+    { value: '2 days', label: '2 Days' },
+    { value: '3 days', label: '3 Days' },
+    { value: '1 week', label: '1 Week' },
+    { value: '2 weeks', label: '2 Weeks' },
+  ];
+
+  const categoryOptions = [
+    { value: 'GV', label: 'Global Volunteer' },
+    { value: 'GTa', label: 'Global Talent' },
+    { value: 'GTe', label: 'Global Teacher' },
+  ];
 
   const handleSearch = async () => {
     // Validate required fields
-    if (!startOfStartDateRange || !endOfStartDateRange || !startOfEndDateRange || !endOfEndDateRange || !category) {
+    if (!startOfStartDateRange || !endOfStartDateRange || !category) {
       setError('Please fill in all date range fields and select a category');
       return;
     }
@@ -211,6 +270,7 @@ const OpportunitySearch = () => {
         category,
       });
       setResults(apiData);
+      setFilteredResults(apiData);
     } catch (err) {
       console.error('Error fetching API data:', err);
       setError('Failed to fetch opportunities. Please try again.');
@@ -219,100 +279,109 @@ const OpportunitySearch = () => {
     }
   };
 
-  const locationOptions = ['COLOMBO CENTRAL','COLOMBO NORTH','COLOMBO SOUTH','KANDY','NIBM','NSBM','RAJARATA','RUHUNA','SLIIT','USJ'];
-  const durationOptions = ['1 day', '2 days', '3 days', '1 week', '2 weeks'];
-  const categoryOptions = ['GV', 'GTa', 'GTe'];
-
   return (
       <section id="opportunities" className="py-20 px-4 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Find Your Opportunity</h2>
 
-          <div className="flex flex-col gap-y-[20px] ">
+          <div className="flex flex-col gap-y-[20px]">
             {/* Opportunity Search */}
-            <div className="lg:col-span-2 mb-[20px]">
-              <Card className="pt-[25px]">
-                <CardContent className="space-y-4">
-                  {error && (
-                      <div className="text-red-500 text-center">{error}</div>
+            <Card className="pt-[25px]">
+              <CardContent className="space-y-4">
+                {error && <div className="text-red-500 text-center">{error}</div>}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                        placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
+                        value={searchQuery}
+                        onChange={(e) => {
+                          const query = e.target.value;
+                          setSearchQuery(query);
+                          
+                          if (results.length > 0) {
+                            if (query.trim() === '') {
+                              setFilteredResults(results);
+                            } else {
+                              const filtered = results.filter(opportunity => 
+                                opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.description.toLowerCase().includes(query.toLowerCase())
+                              );
+                              setFilteredResults(filtered);
+                            }
+                          }
+                        }}
+                        className="pl-10"
+                        disabled={results.length === 0}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                  <div className="md:col-span-2">
+                    <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
+                  </div>
+                  <CalendarInput
+                      label="Start of Start Date Range"
+                      date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
+                      setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+                  <CalendarInput
+                      label="End of Start Date Range"
+                      date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
+                      setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+                  <CalendarInput
+                      label="Start of End Date Range"
+                      date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
+                      setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+                  <CalendarInput
+                      label="End of End Date Range"
+                      date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
+                      setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+                  {category === 'GV' && (
+                      <DropdownComponent label="SDG" options={sdgOptions} selectedOption={sdg} onSelect={setSdg} />
                   )}
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                          placeholder="Search opportunities..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
-                    <DropdownComponent label="Select Location" options={locationOptions} selectedOption={location} onSelect={setLocation} />
-                    <DropdownComponent label="Select Duration" options={durationOptions} selectedOption={duration} onSelect={setDuration} />
-                    <div className="lg:col-span-2">
-                      <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
-                    </div>
-
-                    <CalendarInput
-                        label="Start of Start Date Range"
-                        date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
-                        setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-                    />
-
-                    <CalendarInput
-                        label="End of Start Date Range"
-                        date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
-                        setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-                    />
-
-                    <CalendarInput
-                        label="Start of End Date Range"
-                        date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
-                        setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-                    />
-
-                    <CalendarInput
-                        label="End of End Date Range"
-                        date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
-                        setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-                    />
-                  </div>
-
+                  {category === 'GTa' && (
+                      <DropdownComponent label="Work Field" options={workFieldOptions} selectedOption={workfield} onSelect={setWorkfield} />
+                  )}
                   <Button
                       onClick={handleSearch}
-                      className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md"
+                      className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
                       disabled={loading}
                   >
                     {loading ? 'Searching...' : 'Search Opportunities'}
                   </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Search Results */}
-          <div>
-            <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-            {loading ? (
-                <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
-                  <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
-                </div>
-            ) : (
-                <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-                  <div className="flex flex-col gap-y-[10px] pr-[10px]">
-                    {results.length > 0 ? (
-                        results.map((result) => (
-                            <OpportunityCard key={result.id} opportunity={result} />
-                        ))
-                    ) : (
-                        <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
-                    )}
+            {/* Search Results */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+              {loading ? (
+                  <div className="flex justify-center items-center h-40">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                    <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
                   </div>
-                </div>
-            )}
+              ) : (
+                  <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                    <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                      {results.length === 0 ? (
+                          <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                      ) : filteredResults.length > 0 ? (
+                          filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                      ) : (
+                          <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
+                      )}
+                    </div>
+                  </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

@@ -52,11 +52,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Brand Logo */}
           <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-white" />
-              </div>
-            </div>
+            <img src="/images/Logo4.webp" alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Sincerely Sri Lankan
