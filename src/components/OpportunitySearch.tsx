@@ -2,13 +2,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Calendar, Clock, MapPin, Search, Users } from 'lucide-react';
-import { useState } from 'react';
+import { Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 
 import OpportunityCard from './OportunityCard';
 import { CalendarInput } from './CalanderInputComponent';
-import { start } from 'repl';
 
 export interface Opportunity {
   id: string;
@@ -19,12 +18,12 @@ export interface Opportunity {
   participants: string;
   category: string;
   description: string;
-  slots: { id: number; startingDate: string; endDate: string, name: string, openings: number }[];
+  slots: { id: number; startingDate: string; endDate: string; name: string; openings: number }[];
   applyLink: string;
 }
 
-
-const searchResults: Opportunity[] = [
+// ---------------- Dummy Data (until API loads) ----------------
+const dummyResults: Opportunity[] = [
   {
     id: '4',
     title: 'Teaching English',
@@ -37,11 +36,8 @@ const searchResults: Opportunity[] = [
     slots: [
       { id: 1, startingDate: '2025/01/25', endDate: '2025/01/30', name: 'Morning Session', openings: 3 },
       { id: 2, startingDate: '2025/02/15', endDate: '2025/02/20', name: 'Afternoon Session', openings: 5 },
-      { id: 3, startingDate: '2025/03/10', endDate: '2025/03/15', name: 'Evening Session', openings: 2 }
-
     ],
-    applyLink: 'https://example.com/apply-teaching-english'
-
+    applyLink: 'https://example.com/apply-teaching-english',
   },
   {
     id: '5',
@@ -55,176 +51,233 @@ const searchResults: Opportunity[] = [
     slots: [
       { id: 1, startingDate: '2025/02/01', endDate: '2025/02/08', name: 'Week 1', openings: 4 },
       { id: 2, startingDate: '2025/03/05', endDate: '2025/03/12', name: 'Week 2', openings: 6 },
-      { id: 3, startingDate: '2025/04/10', endDate: '2025/04/17', name: 'Week 3', openings: 5 },
-      { id: 4, startingDate: '2025/05/01', endDate: '2025/05/08', name: 'Week 4', openings: 3 },
-      { id: 5, startingDate: '2025/06/10', endDate: '2025/06/17', name: 'Week 5', openings: 2 },
-      { id: 6, startingDate: '2025/07/15', endDate: '2025/07/22', name: 'Week 6', openings: 4 },
-      { id: 7, startingDate: '2025/08/05', endDate: '2025/08/12', name: 'Week 7', openings: 1 },
-      { id: 8, startingDate: '2025/09/10', endDate: '2025/09/17', name: 'Week 8', openings: 0 }
     ],
-    applyLink: 'https://example.com/apply-organic-farming'
+    applyLink: 'https://example.com/apply-organic-farming',
   },
-  {
-    id: '6',
-    title: 'Community Art Project',
-    location: 'Galle',
-    date: 'Feb 10, 2025',
-    duration: '4 days',
-    participants: '20 spots',
-    category: 'Arts',
-    description: 'Create murals with local artists',
-    slots: [
-      { id: 1, startingDate: '2025/02/10', endDate: '2025/02/14', name: 'Session 1', openings: 10 },
-      { id: 2, startingDate: '2025/03/15', endDate: '2025/03/19', name: 'Session 2', openings: 8 },
-      { id: 3, startingDate: '2025/04/20', endDate: '2025/04/24', name: 'Session 3', openings: 5 }
-    ],
-    applyLink: 'https://example.com/apply-community-art'
-  },
-  {
-    id: '7',
-    title: 'Eco-Tourism Guide Training',
-    location: 'Sigiriya',
-    date: 'Feb 15, 2025',
-    duration: '3 days',
-    participants: '15 spots',
-    category: 'Tourism',
-    description: 'Train to become a certified eco-tourism guide',
-    slots: [
-      { id: 1, startingDate: '2025/02/15', endDate: '2025/02/18', name: 'Batch A', openings: 7 },
-      { id: 2, startingDate: '2025/03/20', endDate: '2025/03/23', name: 'Batch B', openings: 5 },
-      { id: 3, startingDate: '2025/04/25', endDate: '2025/04/28', name: 'Batch C', openings: 3 }
-    ],
-    applyLink: 'https://example.com/apply-eco-tourism'
-  }
 ];
 
+// ---------------- Fetch Logic ----------------
+const GRAPHQL_ENDPOINT = 'https://gis-api.aiesec.org/graphql';
+const AUTH_TOKEN = '4fwM3iqTizYG_WWnzXOA5nuuUwwNnxeGd2unjQO85fQ';
+
+async function fetchOpportunities(): Promise<Opportunity[]> {
+  let page = 1;
+  const perPage = 1000;
+  let allOpportunities: Opportunity[] = [];
+
+  while (true) {
+    const query = `query {
+      opportunities(page: ${page}, per_page: ${perPage}, filters: {
+        status: "open",
+        committee: 1623
+      }) {
+        data {
+          id
+          title
+          status
+          programmes { short_name_display }
+          openings
+          home_lc { name }
+          slots {
+            title
+            start_date
+            end_date
+            openings
+          }
+        }
+        paging {
+          total_pages
+          current_page
+        }
+      }
+    }`;
+
+    const response = await fetch(GRAPHQL_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: AUTH_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      console.error("GraphQL request failed with HTTP code:", response.status);
+      break;
+    }
+
+    const raw = await response.text();
+    console.log("Raw API response:", raw);
+
+    let data: any;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      console.error("Response not JSON (see raw above)");
+      break;
+    }
+
+    if (data.errors) {
+      console.error("GraphQL errors:", data.errors);
+      break;
+    }
+
+    const opportunities = data?.data?.opportunities?.data || [];
+    const paging = data?.data?.opportunities?.paging;
+
+    const mapped: Opportunity[] = opportunities.map((op: any) => {
+      // Calculate duration from the first slot's start_date and end_date
+      let duration = 'N/A';
+      if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
+        const startDate = new Date(op.slots[0].start_date);
+        const endDate = new Date(op.slots[0].end_date);
+        const diffInMs = endDate.getTime() - startDate.getTime();
+        const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+        if (diffInDays >= 7) {
+          const weeks = Math.round(diffInDays / 7);
+          duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
+        } else {
+          duration = `${diffInDays} day${diffInDays > 1 ? 's' : ''}`;
+        }
+      }
+
+      return {
+        id: op.id,
+        title: op.title,
+        location: op.home_lc?.name || 'Unknown',
+        date: op.slots?.[0]?.start_date || '',
+        duration, // Use calculated duration
+        participants: `${op.openings ?? 0} spots`,
+        category: op.programmes?.[0]?.short_name_display || 'N/A',
+        description: '',
+        slots: (op.slots || []).map((s: any, idx: number) => ({
+          id: idx,
+          startingDate: s.start_date,
+          endDate: s.end_date,
+          name: s.title,
+          openings: s.openings,
+        })),
+        applyLink: `https://aiesec.org/opportunity/${op.id}`,
+      };
+    });
+
+    allOpportunities = allOpportunities.concat(mapped);
+
+    if (paging?.current_page >= paging?.total_pages) {
+      break;
+    }
+    page++;
+  }
+
+  return allOpportunities;
+}
+
+// ---------------- Component ----------------
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-
-
-
+  const [results, setResults] = useState<Opportunity[]>(dummyResults);
 
   const [location, setLocation] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
   const [startOfEndDateRange, setStartOfEndDateRange] = useState('');
   const [endOfEndDateRange, setEndOfEndDateRange] = useState('');
-  
   const [duration, setDuration] = useState('');
   const [category, setCategory] = useState('');
-  const locationOptions = ["Mirissa Beach", "Kandy", "Yala National Park", "Ella", "Nuwara Eliya", "Galle", "Sigiriya"]
-  const durationOptions = ["1 day", "2 days", "3 days", "1 week", "2 weeks"]
-  const categoryOptions = ["Education", "Agriculture", "Arts", "Tourism"]
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const apiData = await fetchOpportunities();
+        if (apiData.length > 0) {
+          setResults(apiData);
+        }
+      } catch (err) {
+        console.error('Error fetching API data:', err);
+      }
+    })();
+  }, []);
+
+  const locationOptions = ['Mirissa Beach', 'Kandy', 'Yala National Park', 'Ella', 'Nuwara Eliya', 'Galle', 'Sigiriya'];
+  const durationOptions = ['1 day', '2 days', '3 days', '1 week', '2 weeks'];
+  const categoryOptions = ['Education', 'Agriculture', 'Arts', 'Tourism'];
+
   return (
-    <section id="opportunities" className="py-20 px-4 bg-muted/30">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Find Your Opportunity
-        </h2>
+      <section id="opportunities" className="py-20 px-4 bg-muted/30">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Find Your Opportunity</h2>
 
-        <div className="flex flex-col gap-y-[20px] ">
-
-
-
-          {/* Opportunity Search */}
-          <div className="lg:col-span-2 mb-[20px]">
-
-            <Card className='pt-[25px]'>
-
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search opportunities..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
+          <div className="flex flex-col gap-y-[20px] ">
+            {/* Opportunity Search */}
+            <div className="lg:col-span-2 mb-[20px]">
+              <Card className="pt-[25px]">
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                          placeholder="Search opportunities..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                      />
+                    </div>
                   </div>
-         
-                </div>
 
-              
+                  <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                    <DropdownComponent label="Select Location" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                    <DropdownComponent label="Select Duration" options={durationOptions} selectedOption={duration} onSelect={setDuration} />
+                    <div className="lg:col-span-2">
+                      <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
+                    </div>
 
+                    <CalendarInput
+                        label="Start of Start Date Range"
+                        date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
+                        setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                    />
 
-                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                    <CalendarInput
+                        label="End of Start Date Range"
+                        date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
+                        setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                    />
 
-                  <DropdownComponent
-                    label="Select Location"
-                    options={locationOptions}
-                    selectedOption={location}
-                    onSelect={setLocation}
-                  />
+                    <CalendarInput
+                        label="Start of End Date Range"
+                        date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
+                        setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
+                    />
 
-
-                  <DropdownComponent
-                    label="Select Duration"
-                    options={durationOptions}
-                    selectedOption={duration}
-                    onSelect={setDuration}
-                  />
-
-                  <div className='lg:col-span-2'>
-
-                    <DropdownComponent
-                      label="Select Category"
-                      options={categoryOptions}
-                      selectedOption={category}
-                      onSelect={setCategory}
+                    <CalendarInput
+                        label="End of End Date Range"
+                        date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
+                        setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
 
-                  
-            <CalendarInput
-            label='Start of Start Date Range'
-            date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
-            setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-            />
+                  <Button className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90  text-md">
+                    Search Opportunities
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
-
-
-            <CalendarInput
-            label='End of Start Date Range'
-            date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
-            setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-            />
-
-
-            <CalendarInput
-            label='Start of End Date Range'
-            date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
-            setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-            />
-
-            <CalendarInput
-            label='End of End Date Range'
-            date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
-            setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-            />
-
-                </div>
-
-                <Button className='w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90  text-md'>Search Opportunities</Button>
-
-              </CardContent>
-            </Card>
+          {/* Search Results */}
+          <div>
+            <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+            <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+              <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                {results.map((result) => (
+                    <OpportunityCard key={result.id} opportunity={result} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Search Results */}
-        <div>
-          <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-          <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-            <div className='flex flex-col gap-y-[10px] pr-[10px]'>
-
-              {searchResults.map((result) => (
-                <OpportunityCard key={result.id} opportunity={result} />
-              ))}
-            </div>    </div>
-        </div>
-      </div>
-    </section>
+      </section>
   );
 };
 
