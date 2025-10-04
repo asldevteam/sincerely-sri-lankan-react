@@ -17,7 +17,7 @@ interface CalendarProps {
     label: string
     
 }
-export function Calendar22({ date, setDate, label }: CalendarProps) {
+export function CalendarInput({ date, setDate, label }: CalendarProps) {
   const [open, setOpen] = React.useState(false)
 
 
@@ -33,7 +33,7 @@ export function Calendar22({ date, setDate, label }: CalendarProps) {
             id="date"
             className="w-full justify-between font-normal text-[14px] hover:bg-inherit hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary text-[#d2bc86] hover:text-[#d2bc86] "
           >
-            {date ? date.toLocaleDateString() : "Select Start Date"}
+            {date ? date.toLocaleDateString() : "Select Date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
