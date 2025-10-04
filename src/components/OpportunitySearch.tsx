@@ -343,12 +343,7 @@ const OpportunitySearch = () => {
                       date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
                       setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
                   />
-                  {category === 'GV' && (
-                      <DropdownComponent label="SDG" options={sdgOptions} selectedOption={sdg} onSelect={setSdg} />
-                  )}
-                  {category === 'GTa' && (
-                      <DropdownComponent label="Work Field" options={workFieldOptions} selectedOption={workfield} onSelect={setWorkfield} />
-                  )}
+                 
                   <Button
                       onClick={handleSearch}
                       className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
