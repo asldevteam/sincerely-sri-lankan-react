@@ -300,8 +300,6 @@ const OpportunitySearch = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
-                  <DropdownComponent label="Select Location" options={locationOptions} selectedOption={location} onSelect={setLocation} />
-                  <DropdownComponent label="Select Duration" options={durationOptions} selectedOption={duration} onSelect={setDuration} />
                   <div className="md:col-span-2">
                     <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
                   </div>

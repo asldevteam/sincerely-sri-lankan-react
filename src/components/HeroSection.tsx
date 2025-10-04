@@ -41,7 +41,7 @@ const HeroSection = () => {
       <div className="absolute flex inset-0 cultural-pattern opacity-20" />
    
       {/* Hero Content */}
-      <div className="hero-content relative z-30 max-w-6xl mx-auto px-4 -mt-[200px] lg:mt-0 ">
+      <div className="hero-content relative z-30 max-w-6xl mx-auto px-4   ">
            <div>
         <img src="/images/Logo3.webp" alt="Hero" className="object-contain  max-w-sm  mb-[50px] lg:mb-0  lg:max-w-md mx-auto lg:mt-[50px]" />
       </div>
