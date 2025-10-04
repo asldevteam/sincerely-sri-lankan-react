@@ -18,7 +18,7 @@ const stories: Story[] = [
     title: 'Ancient Wonders',
     content: 'Discover the rich cultural heritage of Sri Lanka through its ancient monuments and archaeological sites. From the magnificent Sigiriya Rock Fortress to the sacred Temple of the Tooth, every destination tells a story of centuries past.',
     ImageUrl: '/images/AncientWonders.webp',
-    postBy: 'John Doe',
+    postBy: 'Josh Don',
     visitorCountry: 'USA'
 
   },
@@ -27,7 +27,7 @@ const stories: Story[] = [
     title: 'Beach Paradise',
     content: 'Experience the pristine beaches and crystal-clear waters of Sri Lanka. From surfing in Arugam Bay to whale watching in Mirissa, the coastal beauty offers endless adventures and relaxation.',
     ImageUrl: '/images/BeachParadise.webp',
-    postBy: 'Jane Smith',
+    postBy: 'Silvia Marquez',
     visitorCountry: 'UK'
 
   },
@@ -36,7 +36,7 @@ const stories: Story[] = [
     title: 'Wildlife Safari',
     content: 'Embark on thrilling wildlife safaris through lush national parks. Spot majestic leopards, gentle elephants, and exotic birds in their natural habitats across Yala and Udawalawe.',
     ImageUrl: '/images/WildSafari.webp',
-    postBy: 'Alice Johnson',
+    postBy: 'Nia Hernandez',
     visitorCountry: 'Canada'
 
   }

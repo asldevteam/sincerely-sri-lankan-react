@@ -181,6 +181,7 @@ async function fetchOpportunities(filters: {
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Opportunity[]>([]);
+  const [filteredResults, setFilteredResults] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState('');
@@ -269,6 +270,7 @@ const OpportunitySearch = () => {
         category,
       });
       setResults(apiData);
+      setFilteredResults(apiData);
     } catch (err) {
       console.error('Error fetching API data:', err);
       setError('Failed to fetch opportunities. Please try again.');
@@ -291,10 +293,28 @@ const OpportunitySearch = () => {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search opportunities..."
+                        placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                          const query = e.target.value;
+                          setSearchQuery(query);
+                          
+                          if (results.length > 0) {
+                            if (query.trim() === '') {
+                              setFilteredResults(results);
+                            } else {
+                              const filtered = results.filter(opportunity => 
+                                opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                                opportunity.description.toLowerCase().includes(query.toLowerCase())
+                              );
+                              setFilteredResults(filtered);
+                            }
+                          }
+                        }}
                         className="pl-10"
+                        disabled={results.length === 0}
                     />
                   </div>
                 </div>
@@ -351,10 +371,12 @@ const OpportunitySearch = () => {
               ) : (
                   <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
                     <div className="flex flex-col gap-y-[10px] pr-[10px]">
-                      {results.length > 0 ? (
-                          results.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
-                      ) : (
+                      {results.length === 0 ? (
                           <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                      ) : filteredResults.length > 0 ? (
+                          filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                      ) : (
+                          <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
                       )}
                     </div>
                   </div>
