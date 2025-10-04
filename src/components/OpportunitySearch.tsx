@@ -184,13 +184,60 @@ const OpportunitySearch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [location, setLocation] = useState('');
+  const [sdg, setSdg] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
   const [startOfEndDateRange, setStartOfEndDateRange] = useState('');
   const [endOfEndDateRange, setEndOfEndDateRange] = useState('');
+
+
+  const [workfield, setWorkfield] = useState('');
+  const [category, setCategory] = useState('');
+  const sdgOptions = [
+    { value: 'no-poverty', label: 'No Poverty' },
+    { value: 'zero-hunger', label: 'Zero Hunger' },
+    { value: 'good-health', label: 'Good Health' },
+    { value: 'quality-education', label: 'Quality Education' },
+    { value: 'gender-equality', label: 'Gender Equality' },
+    { value: 'clean-water', label: 'Clean Water' },
+    { value: 'affordable-energy', label: 'Affordable Energy' },
+    { value: 'decent-work', label: 'Decent Work' },
+    { value: 'industry-innovation', label: 'Industry Innovation' },
+    { value: 'reduced-inequalities', label: 'Reduced Inequalities' },
+    { value: 'sustainable-cities', label: 'Sustainable Cities' },
+    { value: 'responsible-consumption', label: 'Responsible Consumption' },
+    { value: 'climate-action', label: 'Climate Action' },
+    { value: 'life-below-water', label: 'Life Below Water' },
+    { value: 'life-on-land', label: 'Life on Land' },
+    { value: 'peace-justice', label: 'Peace Justice' },
+    { value: 'partnerships-for-goals', label: 'Partnerships for Goals' },
+  ];
+  const workFieldOptions = [
+    { value: '54', label: 'Business Administration' },
+    { value: '55', label: 'Information Technology' },
+    { value: '56', label: 'Marketing' },
+    { value: '57', label: 'Engineering' },
+    { value: '59', label: 'Finance' },
+    { value: '60', label: 'Business Development' },
+    { value: '58', label: 'Other' },
+  ];
+
+  const categoryOptions = [
+    { value: 'GV', label: 'GV' },
+    { value: 'GTa', label: 'GTa' },
+    { value: 'Gte', label: 'GTe' },
+  ];
+  return (
+    <section id="opportunities" className="py-20 px-4 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          Find Your Opportunity
+        </h2>
+
+        <div className="flex flex-col gap-y-[20px] ">
   const [duration, setDuration] = useState('');
   const [category, setCategory] = useState('');
+
 
   const handleSearch = async () => {
     // Validate required fields
@@ -247,6 +294,7 @@ const OpportunitySearch = () => {
                       />
                     </div>
                   </div>
+                </div>
 
                   <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
                     <DropdownComponent label="Select Location" options={locationOptions} selectedOption={location} onSelect={setLocation} />
@@ -260,7 +308,8 @@ const OpportunitySearch = () => {
                         date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
                         setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
                     />
-
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                  <div className='lg:col-span-2'>
                     <CalendarInput
                         label="End of Start Date Range"
                         date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
@@ -279,7 +328,51 @@ const OpportunitySearch = () => {
                         setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
+                  <CalendarInput
+                    label='Start of Start Date Range'
+                    date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
+                    setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
 
+
+
+                  <CalendarInput
+                    label='End of Start Date Range'
+                    date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
+                    setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+
+
+                  <CalendarInput
+                    label='Start of End Date Range'
+                    date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
+                    setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+
+                  <CalendarInput
+                    label='End of End Date Range'
+                    date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
+                    setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
+                  />
+
+                        {category=="GV" && <DropdownComponent
+                      label="SDG"
+                      options={sdgOptions}
+                      selectedOption={sdg}
+                      onSelect={setSdg}
+                    />}
+
+
+                   { 
+                   
+                   category== "GTa" &&<DropdownComponent
+                      label="Work Field"
+                      options={workFieldOptions}
+                      selectedOption={workfield}
+                      onSelect={setWorkfield}
+                    />
+                    
+                    }
                   <Button
                       onClick={handleSearch}
                       className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md"
