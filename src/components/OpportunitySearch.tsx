@@ -90,42 +90,61 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
     const opportunities = data?.data?.opportunities?.data || [];
     const paging = data?.data?.opportunities?.paging;
 
-    const mapped: Opportunity[] = opportunities.map((op: any) => {
-      // Calculate duration from the first slot's start_date and end_date
-      let duration = 'N/A';
-      if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
-        const startDate = new Date(op.slots[0].start_date);
-        const endDate = new Date(op.slots[0].end_date);
-        const diffInMs = endDate.getTime() - startDate.getTime();
-        const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    const mapped: Opportunity[] = opportunities
+        .filter((op: any) => op.openings && op.openings > 0) // Skip if openings is 0 or null
+        .map((op: any) => {
+          // Calculate duration from the first slot's start_date and end_date
+          let duration = 'N/A';
+          if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
+            const startDate = new Date(op.slots[0].start_date);
+            const endDate = new Date(op.slots[0].end_date);
+            const diffInMs = endDate.getTime() - startDate.getTime();
+            const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
-        if (diffInDays >= 7) {
-          const weeks = Math.round(diffInDays / 7);
-          duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
-        } else {
-          duration = `${diffInDays} day${diffInDays > 1 ? 's' : ''}`;
-        }
-      }
+            if (diffInDays >= 7) {
+              const weeks = Math.round(diffInDays / 7);
+              duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
+            } else {
+              duration = `${diffInDays} day${diffInDays > 1 ? 's' : ''}`;
+            }
+          }
 
-      return {
-        id: op.id,
-        title: op.title,
-        location: op.home_lc?.name || 'Unknown',
-        date: op.slots?.[0]?.start_date || 'N/A',
-        duration, // Use calculated duration
-        participants: `${op.openings ?? 0} spots`,
-        category: op.programmes?.[0]?.short_name_display || 'N/A',
-        description: '',
-        slots: (op.slots || []).map((s: any, idx: number) => ({
-          id: idx,
-          startingDate: s.start_date,
-          endDate: s.end_date,
-          name: s.title,
-          openings: s.openings,
-        })),
-        applyLink: `https://aiesec.org/opportunity/${op.id}`,
-      };
-    });
+          // Determine applyLink based on programme short_name_display
+          const program = op.programmes?.[0]?.short_name_display;
+          let programSegment: string;
+          switch (program) {
+            case 'GTa':
+              programSegment = 'global-talent';
+              break;
+            case 'GTe':
+              programSegment = 'global-teacher';
+              break;
+            case 'GV':
+              programSegment = 'global-volunteer';
+              break;
+            default:
+              programSegment = 'opportunity';
+          }
+
+          return {
+            id: op.id,
+            title: op.title,
+            location: op.home_lc?.name || 'Unknown',
+            date: op.slots?.[0]?.start_date || '',
+            duration, // Use calculated duration
+            participants: `${op.openings} spots`,
+            category: op.programmes?.[0]?.short_name_display || 'N/A',
+            description: '',
+            slots: (op.slots || []).map((s: any, idx: number) => ({
+              id: idx,
+              startingDate: s.start_date,
+              endDate: s.end_date,
+              name: s.title,
+              openings: s.openings,
+            })),
+            applyLink: `https://aiesec.org/opportunity/${programSegment}/${op.id}`,
+          };
+        });
 
     allOpportunities = allOpportunities.concat(mapped);
 
