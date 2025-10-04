@@ -86,7 +86,7 @@ const destinations: Destination[] = [
     description: 'Hill station known as "Little England" with tea plantations and cool climate.',
     highlights: ['Tea Factories', 'Gregory Lake', 'Colonial Architecture'],
     duration: '1-2 days',
-    image: '/images/placeholder.svg'
+    image: '/images/NuwaraEliya.webp'
   },
   {
     id: 'anuradhapura',
@@ -96,7 +96,7 @@ const destinations: Destination[] = [
     description: 'Ancient capital with sacred Buddhist temples and archaeological wonders.',
     highlights: ['Sacred Bodhi Tree', 'Ancient Stupas', 'Archaeological Sites'],
     duration: 'Full day',
-    image: '/images/AncientWonders.webp'
+    image: '/images/Anuradhapura.webp'
   },
   {
     id: 'polonnaruwa',
@@ -106,17 +106,17 @@ const destinations: Destination[] = [
     description: 'Medieval capital showcasing ancient Sri Lankan architecture and sculptures.',
     highlights: ['Gal Vihara', 'Royal Palace', 'Ancient Irrigation'],
     duration: 'Full day',
-    image: '/images/AncientWonders.webp'
+    image: '/images/Polonnaruwa.webp'
   },
   {
     id: 'arugam-bay',
     name: 'Arugam Bay',
-    position: { x: 85, y: 65 },
+    position: { x: 80, y: 55 },
     type: 'beach',
     description: 'World-famous surfing destination with pristine beaches and laid-back vibe.',
     highlights: ['World-class Surfing', 'Beach Culture', 'Seafood'],
     duration: '2-3 days',
-    image: '/images/BeachParadise.webp'
+    image: '/images/ArugamBay.webp'
   },
   {
     id: 'dambulla',
@@ -126,7 +126,7 @@ const destinations: Destination[] = [
     description: 'Ancient cave temple complex with stunning Buddhist art and statues.',
     highlights: ['Cave Paintings', 'Buddha Statues', 'Mountain Views'],
     duration: '2-3 hours',
-    image: '/images/AncientWonders.webp'
+    image: '/images/Dambulla.webp'
   },
   {
     id: 'bentota',
@@ -136,7 +136,7 @@ const destinations: Destination[] = [
     description: 'Golden sandy beaches perfect for water sports and relaxation.',
     highlights: ['Water Sports', 'Turtle Hatchery', 'River Safari'],
     duration: '1-2 days',
-    image: '/images/BeachParadise.webp'
+    image: '/images/Bentota.webp'
   },
   {
     id: 'negombo',
@@ -146,7 +146,7 @@ const destinations: Destination[] = [
     description: 'Coastal city near airport with fishing culture and colonial heritage.',
     highlights: ['Fish Market', 'Colonial Churches', 'Lagoon Tours'],
     duration: 'Half day',
-    image: '/images/BeachParadise.webp'
+    image: '/images/Negambo.webp'
   },
   {
     id: 'haputale',
@@ -156,7 +156,7 @@ const destinations: Destination[] = [
     description: 'Mountain town with breathtaking views and tea plantation walks.',
     highlights: ['Lipton\'s Seat', 'Tea Plantations', 'Mountain Views'],
     duration: '1-2 days',
-    image: '/images/placeholder.svg'
+    image: '/images/Haputhale.webp'
   },
   {
     id: 'hikkaduwa',
@@ -166,7 +166,7 @@ const destinations: Destination[] = [
     description: 'Vibrant beach town known for coral reefs and nightlife.',
     highlights: ['Coral Sanctuary', 'Surfing', 'Beach Parties'],
     duration: '1-2 days',
-    image: '/images/BeachParadise.webp'
+    image: '/images/Hikkaduwa.webp'
   },
   {
     id: 'adams-peak',
@@ -176,27 +176,27 @@ const destinations: Destination[] = [
     description: 'Sacred mountain pilgrimage site with sunrise hiking trails.',
     highlights: ['Sunrise Hike', 'Sacred Footprint', 'Pilgrimage Site'],
     duration: 'Overnight hike',
-    image: '/images/placeholder.svg'
+    image: '/images/AdamsPeak.webp'
   },
   {
     id: 'jaffna',
     name: 'Jaffna',
-    position: { x: 48, y: 8 },
+    position: { x: 30, y: 7 },
     type: 'cultural',
     description: 'Northern cultural capital with Tamil heritage and historic fort.',
     highlights: ['Jaffna Fort', 'Hindu Temples', 'Tamil Culture'],
     duration: '1-2 days',
-    image: '/images/AncientWonders.webp'
+    image: '/images/JaffnaFort.webp'
   },
   {
     id: 'trincomalee',
     name: 'Trincomalee',
-    position: { x: 70, y: 20 },
+    position: { x: 55, y: 20 },
     type: 'beach',
     description: 'Eastern port city with pristine beaches and natural harbor.',
     highlights: ['Nilaveli Beach', 'Koneswaram Temple', 'Whale Watching'],
     duration: '2-3 days',
-    image: '/images/BeachParadise.webp'
+    image: '/images/Koneshwaram.webp'
   },
   {
     id: 'mannar',
@@ -206,7 +206,7 @@ const destinations: Destination[] = [
     description: 'Remote island known for baobab trees and bird sanctuary.',
     highlights: ['Baobab Trees', 'Bird Sanctuary', 'Adam\'s Bridge'],
     duration: '1-2 days',
-    image: '/images/placeholder.svg'
+    image: '/images/Mannar.webp'
   },
   {
     id: 'vavuniya',
@@ -216,7 +216,7 @@ const destinations: Destination[] = [
     description: 'Gateway to the north with archaeological sites and cultural heritage.',
     highlights: ['Archaeological Museum', 'Vavuniya Tank', 'Cultural Sites'],
     duration: 'Half day',
-    image: '/images/AncientWonders.webp'
+    image: '/images/Vavniya.webp'
   },
   {
     id: 'kilinochchi',
@@ -226,17 +226,17 @@ const destinations: Destination[] = [
     description: 'Historical town with war memorials and cultural significance.',
     highlights: ['War Memorial', 'Cultural Heritage', 'Local Markets'],
     duration: 'Half day',
-    image: '/images/placeholder.svg'
+    image: '/images/Kilinochchi.webp'
   },
   {
     id: 'point-pedro',
     name: 'Point Pedro',
-    position: { x: 52, y: 5 },
+    position: { x: 32, y: 5 },
     type: 'beach',
     description: 'Northernmost point of Sri Lanka with lighthouse and beaches.',
     highlights: ['Point Pedro Lighthouse', 'Northern Beaches', 'Fishing Villages'],
     duration: 'Half day',
-    image: '/images/BeachParadise.webp'
+    image: '/images/PointPedro.webp'
   }
 ];
 
@@ -292,27 +292,29 @@ const InteractiveMap = () => {
               {destinations.map((destination) => (
                 <div
                   key={destination.id}
-                  className={`destination-marker ${getTypeColor(destination.type)} transform transition duration-500 animate-pulse ${hoveredDestination === destination.id ? 'scale-150' : 'scale-100'
-                    }`}
                   style={{
                     left: `${destination.position.x}%`,
-                    top: `${destination.position.y}%`
+                    top: `${destination.position.y}%`,
+                    position: 'absolute',
                   }}
                   onClick={() => setSelectedDestination(destination)}
                   onMouseEnter={() => setHoveredDestination(destination.id)}
                   onMouseLeave={() => setHoveredDestination(null)}
                 >
-                  <MapPin className="w-4 h-4 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " />
-
+                  <div
+                    className={`destination-marker ${getTypeColor(destination.type)} transform transition duration-500 animate-pulse ${hoveredDestination === destination.id ? 'scale-150' : 'scale-100'}`}
+                    style={{ position: 'relative' }}
+                  >
+                    <MapPin className="w-4 h-4 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " />
+                  </div>
                   {/* Hover Tooltip */}
                   {hoveredDestination === destination.id && (
-                    <div className="z-10 absolute bottom-full bg-black left-1/2 -translate-x-1/2 mb-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 whitespace-nowrap">
+                    <div className="z-10 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 whitespace-nowrap">
                       <p className="font-semibold text-sm">{destination.name}</p>
                       <p className="text-xs text-muted-foreground capitalize">{destination.type}</p>
                     </div>
                   )}
                 </div>
-
               ))}
 
               {/* Map Legend */}
