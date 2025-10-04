@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 import OpportunityCard from './OportunityCard';
 import { CalendarInput } from './CalanderInputComponent';
@@ -25,16 +25,38 @@ export interface Opportunity {
 const GRAPHQL_ENDPOINT = 'https://gis-api.aiesec.org/graphql';
 const AUTH_TOKEN = '4fwM3iqTizYG_WWnzXOA5nuuUwwNnxeGd2unjQO85fQ';
 
-async function fetchOpportunities(): Promise<Opportunity[]> {
+async function fetchOpportunities(filters: {
+  startOfStartDateRange: string;
+  endOfStartDateRange: string;
+  startOfEndDateRange: string;
+  endOfEndDateRange: string;
+  category: string;
+}): Promise<Opportunity[]> {
   let page = 1;
   const perPage = 1000;
   let allOpportunities: Opportunity[] = [];
+
+  // Map category to programme ID
+  const categoryMap: { [key: string]: number } = {
+    GV: 7,
+    GTa: 8,
+    GTe: 9,
+  };
 
   while (true) {
     const query = `query {
       opportunities(page: ${page}, per_page: ${perPage}, filters: {
         status: "open",
-        committee: 1623
+        committee: 1623,
+        earliest_start_date: {
+          from: "${filters.startOfStartDateRange}",
+          to: "${filters.endOfStartDateRange}"
+        },
+        latest_end_date: {
+          from: "${filters.startOfEndDateRange}",
+          to: "${filters.endOfEndDateRange}"
+        },
+        ${filters.category ? `programmes: ${categoryMap[filters.category] || 0},` : ''}
       }) {
         data {
           id
@@ -91,9 +113,8 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
     const paging = data?.data?.opportunities?.paging;
 
     const mapped: Opportunity[] = opportunities
-        .filter((op: any) => op.openings && op.openings > 0) // Skip if openings is 0 or null
+        .filter((op: any) => op.openings && op.openings > 0)
         .map((op: any) => {
-          // Calculate duration from the first slot's start_date and end_date
           let duration = 'N/A';
           if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
             const startDate = new Date(op.slots[0].start_date);
@@ -109,7 +130,6 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
             }
           }
 
-          // Determine applyLink based on programme short_name_display
           const program = op.programmes?.[0]?.short_name_display;
           let programSegment: string;
           switch (program) {
@@ -131,7 +151,7 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
             title: op.title,
             location: op.home_lc?.name || 'Unknown',
             date: op.slots?.[0]?.start_date || '',
-            duration, // Use calculated duration
+            duration,
             participants: `${op.openings} spots`,
             category: op.programmes?.[0]?.short_name_display || 'N/A',
             description: '',
@@ -161,7 +181,8 @@ async function fetchOpportunities(): Promise<Opportunity[]> {
 const OpportunitySearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Opportunity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [location, setLocation] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
@@ -171,23 +192,36 @@ const OpportunitySearch = () => {
   const [duration, setDuration] = useState('');
   const [category, setCategory] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const apiData = await fetchOpportunities();
-        setResults(apiData);
-      } catch (err) {
-        console.error('Error fetching API data:', err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const handleSearch = async () => {
+    // Validate required fields
+    if (!startOfStartDateRange || !endOfStartDateRange || !startOfEndDateRange || !endOfEndDateRange || !category) {
+      setError('Please fill in all date range fields and select a category');
+      return;
+    }
 
-  const locationOptions = ['Mirissa Beach', 'Kandy', 'Yala National Park', 'Ella', 'Nuwara Eliya', 'Galle', 'Sigiriya'];
+    setError(null);
+    setLoading(true);
+
+    try {
+      const apiData = await fetchOpportunities({
+        startOfStartDateRange,
+        endOfStartDateRange,
+        startOfEndDateRange,
+        endOfEndDateRange,
+        category,
+      });
+      setResults(apiData);
+    } catch (err) {
+      console.error('Error fetching API data:', err);
+      setError('Failed to fetch opportunities. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const locationOptions = ['COLOMBO CENTRAL','COLOMBO NORTH','COLOMBO SOUTH','KANDY','NIBM','NSBM','RAJARATA','RUHUNA','SLIIT','USJ'];
   const durationOptions = ['1 day', '2 days', '3 days', '1 week', '2 weeks'];
-  const categoryOptions = ['Education', 'Agriculture', 'Arts', 'Tourism'];
+  const categoryOptions = ['GV', 'GTa', 'GTe'];
 
   return (
       <section id="opportunities" className="py-20 px-4 bg-muted/30">
@@ -199,6 +233,9 @@ const OpportunitySearch = () => {
             <div className="lg:col-span-2 mb-[20px]">
               <Card className="pt-[25px]">
                 <CardContent className="space-y-4">
+                  {error && (
+                      <div className="text-red-500 text-center">{error}</div>
+                  )}
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -243,8 +280,12 @@ const OpportunitySearch = () => {
                     />
                   </div>
 
-                  <Button className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90  text-md">
-                    Search Opportunities
+                  <Button
+                      onClick={handleSearch}
+                      className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md"
+                      disabled={loading}
+                  >
+                    {loading ? 'Searching...' : 'Search Opportunities'}
                   </Button>
                 </CardContent>
               </Card>
@@ -267,7 +308,7 @@ const OpportunitySearch = () => {
                             <OpportunityCard key={result.id} opportunity={result} />
                         ))
                     ) : (
-                        <p className="text-center text-muted-foreground">No opportunities found.</p>
+                        <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
                     )}
                   </div>
                 </div>
