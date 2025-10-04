@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, Play, X, Star, Clock, Users } from 'lucide-react';
 import mapImage from '@/assets/sri-lanka-map.jpg';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { MapPin } from 'lucide-react';
+import { useState } from 'react';
 
 interface Destination {
   id: string;
@@ -27,8 +26,6 @@ const destinations: Destination[] = [
     description: 'Ancient rock fortress with breathtaking frescoes and panoramic views.',
     highlights: ['Ancient Architecture', 'Mirror Wall', '5th Century Frescoes'],
     duration: '4-6 hours',
-
-
     image: '/images/Sigiriya.webp'
   },
   {
@@ -39,8 +36,7 @@ const destinations: Destination[] = [
     description: 'Sacred Buddhist temple housing the relic of Buddha\'s tooth.',
     highlights: ['Sacred Relic', 'Cultural Shows', 'Royal Palace'],
     duration: '3-4 hours',
-
-    image:"/images/TempleToothRelic.webp"
+    image: "/images/TempleToothRelic.webp"
   },
   {
     id: 'ella',
@@ -50,7 +46,6 @@ const destinations: Destination[] = [
     description: 'Scenic hill station with hiking trails and colonial charm.',
     highlights: ['Hiking Trails', 'Tea Plantations', 'Train Rides'],
     duration: 'Full day',
-
     image: '/images/NineArchBridge.webp'
   },
   {
@@ -61,7 +56,6 @@ const destinations: Destination[] = [
     description: 'Dutch colonial fort with cobblestone streets and ocean views.',
     highlights: ['Colonial Architecture', 'Art Galleries', 'Sunset Views'],
     duration: '2-3 hours',
-
     image: '/images/GalleFort.webp'
   },
   {
@@ -72,7 +66,6 @@ const destinations: Destination[] = [
     description: 'Perfect for whale watching and pristine beach relaxation.',
     highlights: ['Whale Watching', 'Surfing', 'Beach Parties'],
     duration: 'Full day',
-
     image: '/images/Mirissa.webp'
   },
   {
@@ -83,8 +76,167 @@ const destinations: Destination[] = [
     description: 'Wildlife safari destination famous for leopards and elephants.',
     highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
     duration: 'Half/Full day',
-
     image: '/images/Yala.webp'
+  },
+  {
+    id: 'nuwara-eliya',
+    name: 'Nuwara Eliya',
+    position: { x: 58, y: 55 },
+    type: 'nature',
+    description: 'Hill station known as "Little England" with tea plantations and cool climate.',
+    highlights: ['Tea Factories', 'Gregory Lake', 'Colonial Architecture'],
+    duration: '1-2 days',
+    image: '/images/placeholder.svg'
+  },
+  {
+    id: 'anuradhapura',
+    name: 'Anuradhapura',
+    position: { x: 45, y: 25 },
+    type: 'cultural',
+    description: 'Ancient capital with sacred Buddhist temples and archaeological wonders.',
+    highlights: ['Sacred Bodhi Tree', 'Ancient Stupas', 'Archaeological Sites'],
+    duration: 'Full day',
+    image: '/images/AncientWonders.webp'
+  },
+  {
+    id: 'polonnaruwa',
+    name: 'Polonnaruwa',
+    position: { x: 55, y: 30 },
+    type: 'cultural',
+    description: 'Medieval capital showcasing ancient Sri Lankan architecture and sculptures.',
+    highlights: ['Gal Vihara', 'Royal Palace', 'Ancient Irrigation'],
+    duration: 'Full day',
+    image: '/images/AncientWonders.webp'
+  },
+  {
+    id: 'arugam-bay',
+    name: 'Arugam Bay',
+    position: { x: 85, y: 65 },
+    type: 'beach',
+    description: 'World-famous surfing destination with pristine beaches and laid-back vibe.',
+    highlights: ['World-class Surfing', 'Beach Culture', 'Seafood'],
+    duration: '2-3 days',
+    image: '/images/BeachParadise.webp'
+  },
+  {
+    id: 'dambulla',
+    name: 'Dambulla Cave Temple',
+    position: { x: 58, y: 35 },
+    type: 'cultural',
+    description: 'Ancient cave temple complex with stunning Buddhist art and statues.',
+    highlights: ['Cave Paintings', 'Buddha Statues', 'Mountain Views'],
+    duration: '2-3 hours',
+    image: '/images/AncientWonders.webp'
+  },
+  {
+    id: 'bentota',
+    name: 'Bentota Beach',
+    position: { x: 45, y: 82 },
+    type: 'beach',
+    description: 'Golden sandy beaches perfect for water sports and relaxation.',
+    highlights: ['Water Sports', 'Turtle Hatchery', 'River Safari'],
+    duration: '1-2 days',
+    image: '/images/BeachParadise.webp'
+  },
+  {
+    id: 'negombo',
+    name: 'Negombo',
+    position: { x: 40, y: 40 },
+    type: 'beach',
+    description: 'Coastal city near airport with fishing culture and colonial heritage.',
+    highlights: ['Fish Market', 'Colonial Churches', 'Lagoon Tours'],
+    duration: 'Half day',
+    image: '/images/BeachParadise.webp'
+  },
+  {
+    id: 'haputale',
+    name: 'Haputale',
+    position: { x: 62, y: 60 },
+    type: 'nature',
+    description: 'Mountain town with breathtaking views and tea plantation walks.',
+    highlights: ['Lipton\'s Seat', 'Tea Plantations', 'Mountain Views'],
+    duration: '1-2 days',
+    image: '/images/placeholder.svg'
+  },
+  {
+    id: 'hikkaduwa',
+    name: 'Hikkaduwa',
+    position: { x: 48, y: 83 },
+    type: 'beach',
+    description: 'Vibrant beach town known for coral reefs and nightlife.',
+    highlights: ['Coral Sanctuary', 'Surfing', 'Beach Parties'],
+    duration: '1-2 days',
+    image: '/images/BeachParadise.webp'
+  },
+  {
+    id: 'adams-peak',
+    name: 'Adam\'s Peak',
+    position: { x: 53, y: 58 },
+    type: 'adventure',
+    description: 'Sacred mountain pilgrimage site with sunrise hiking trails.',
+    highlights: ['Sunrise Hike', 'Sacred Footprint', 'Pilgrimage Site'],
+    duration: 'Overnight hike',
+    image: '/images/placeholder.svg'
+  },
+  {
+    id: 'jaffna',
+    name: 'Jaffna',
+    position: { x: 48, y: 8 },
+    type: 'cultural',
+    description: 'Northern cultural capital with Tamil heritage and historic fort.',
+    highlights: ['Jaffna Fort', 'Hindu Temples', 'Tamil Culture'],
+    duration: '1-2 days',
+    image: '/images/AncientWonders.webp'
+  },
+  {
+    id: 'trincomalee',
+    name: 'Trincomalee',
+    position: { x: 70, y: 20 },
+    type: 'beach',
+    description: 'Eastern port city with pristine beaches and natural harbor.',
+    highlights: ['Nilaveli Beach', 'Koneswaram Temple', 'Whale Watching'],
+    duration: '2-3 days',
+    image: '/images/BeachParadise.webp'
+  },
+  {
+    id: 'mannar',
+    name: 'Mannar Island',
+    position: { x: 35, y: 18 },
+    type: 'nature',
+    description: 'Remote island known for baobab trees and bird sanctuary.',
+    highlights: ['Baobab Trees', 'Bird Sanctuary', 'Adam\'s Bridge'],
+    duration: '1-2 days',
+    image: '/images/placeholder.svg'
+  },
+  {
+    id: 'vavuniya',
+    name: 'Vavuniya',
+    position: { x: 45, y: 22 },
+    type: 'cultural',
+    description: 'Gateway to the north with archaeological sites and cultural heritage.',
+    highlights: ['Archaeological Museum', 'Vavuniya Tank', 'Cultural Sites'],
+    duration: 'Half day',
+    image: '/images/AncientWonders.webp'
+  },
+  {
+    id: 'kilinochchi',
+    name: 'Kilinochchi',
+    position: { x: 42, y: 15 },
+    type: 'cultural',
+    description: 'Historical town with war memorials and cultural significance.',
+    highlights: ['War Memorial', 'Cultural Heritage', 'Local Markets'],
+    duration: 'Half day',
+    image: '/images/placeholder.svg'
+  },
+  {
+    id: 'point-pedro',
+    name: 'Point Pedro',
+    position: { x: 52, y: 5 },
+    type: 'beach',
+    description: 'Northernmost point of Sri Lanka with lighthouse and beaches.',
+    highlights: ['Point Pedro Lighthouse', 'Northern Beaches', 'Fishing Villages'],
+    duration: 'Half day',
+    image: '/images/BeachParadise.webp'
   }
 ];
 

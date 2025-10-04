@@ -30,7 +30,7 @@ const HeroSection = () => {
     <section className="hero-video relative">
       {/* Background Image with Parallax Effect */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-cover bg-center bg-fixed "
         style={{ backgroundImage: `url(${heroImage})` }}
       />
       
@@ -38,10 +38,13 @@ const HeroSection = () => {
       <div className="hero-overlay bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
       
       {/* Cultural Pattern Overlay */}
-      <div className="absolute inset-0 cultural-pattern opacity-20" />
-      
+      <div className="absolute flex inset-0 cultural-pattern opacity-20" />
+   
       {/* Hero Content */}
-      <div className="hero-content relative z-30 max-w-6xl mx-auto px-4">
+      <div className="hero-content relative z-30 max-w-6xl mx-auto px-4 -mt-[200px] lg:mt-0 ">
+           <div>
+        <img src="/images/Logo3.webp" alt="Hero" className="object-contain  max-w-sm  mb-[50px] lg:mb-0  lg:max-w-md mx-auto lg:mt-[50px]" />
+      </div>
         {/* Main Title with Text Animation */}
         <div className="mb-8 overflow-hidden">
           <h1 
