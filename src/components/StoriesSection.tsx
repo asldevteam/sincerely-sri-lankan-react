@@ -15,29 +15,38 @@ interface Story {
 const stories: Story[] = [
   {
     id: '1',
-    title: 'Ancient Wonders',
-    content: 'Discover the rich cultural heritage of Sri Lanka through its ancient monuments and archaeological sites. From the magnificent Sigiriya Rock Fortress to the sacred Temple of the Tooth, every destination tells a story of centuries past.',
-    ImageUrl: '/images/AncientWonders.webp',
-    postBy: 'Josh Don',
-    visitorCountry: 'USA'
+    title: 'Feeling Valued and Supported Throughout',
+    content: 'They did a really great job and I‘m very satisfied about the way they cared about us. The communication was always very good and we received help and answers to our questions very quickly. Thank you :)',
+    ImageUrl: '/images/Testimonial Franka.jpg',
+    postBy: 'Franka Wimmer',
+    visitorCountry: 'Germany'
 
   },
   {
     id: '2',
-    title: 'Beach Paradise',
-    content: 'Experience the pristine beaches and crystal-clear waters of Sri Lanka. From surfing in Arugam Bay to whale watching in Mirissa, the coastal beauty offers endless adventures and relaxation.',
-    ImageUrl: '/images/BeachParadise.webp',
-    postBy: 'Silvia Marquez',
-    visitorCountry: 'UK'
+    title: 'A Journey Filled with Help and Happiness',
+    content: 'It was a good experience with aiesec in srilanka, stayed there for 45 days in kosgoda and took a tour in srilanka and it was amazing and the aiesec members helped as a lot in any problem we were facing.',
+    ImageUrl: '/images/Testmonial Ahamed.jpg',
+    postBy: 'Abdelrahmen Ahamed',
+    visitorCountry: 'Egypt'
 
   },
   {
     id: '3',
-    title: 'Wildlife Safari',
-    content: 'Embark on thrilling wildlife safaris through lush national parks. Spot majestic leopards, gentle elephants, and exotic birds in their natural habitats across Yala and Udawalawe.',
-    ImageUrl: '/images/WildSafari.webp',
-    postBy: 'Nia Hernandez',
-    visitorCountry: 'Canada'
+    title: 'Best Experience of My Life',
+    content: 'I volunteered in Sri Lanka through AIESEC in SL for 6 weeks. It was the best experience of my life. U witnesses an actual impact that I made there. I am super grateful for all the things that the experience offered me.',
+    ImageUrl: '/images/Testimonial Prabhakar.webp',
+    postBy: 'Prabhakar Chalise',
+    visitorCountry: 'India'
+
+  },
+  {
+    id: '4',
+    title: 'A Home Away from Home',
+    content: 'One of the best exchanges in my life. I have done 2 different projects, one after another, where I have met some really amazing people. I have made friends, in which, if I will have any other chance in the future to come back in Sri Lanka in a visit, I will have the assurance that I will be surrounded by friends.',
+    ImageUrl: '/images/Testimonial Vlad.webp',
+    postBy: 'Vlad Walker',
+    visitorCountry: 'Europe'
 
   }
 ];
