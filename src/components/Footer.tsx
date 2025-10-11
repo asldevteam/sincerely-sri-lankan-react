@@ -1,5 +1,4 @@
 import { RiTwitterXLine } from "react-icons/ri";
-
 import {
   Mail,
   Phone,
@@ -7,7 +6,7 @@ import {
   Instagram,
   Facebook,
   Youtube,
- X
+  X
 } from 'lucide-react';
 
 const Footer = () => {
@@ -133,8 +132,9 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col justify-center items-center text-sm text-muted-foreground">
-          <p className="flex items-center hover:scale-105 transition-transform duration-300 cursor-pointer">
-            Made with ❤️ by <span className="font-semibold ml-1">Dev.Team of AIESEC in Sri Lanka</span>
+          <p className="flex items-center justify-center hover:scale-105 transition-transform duration-300 cursor-pointer whitespace-nowrap text-xs sm:text-sm">
+            Made with ❤️ by 
+            <span className="font-semibold ml-1">&lt;/Dev.Team&gt; of AIESEC in Sri Lanka</span>
           </p>
         </div>
       </div>
