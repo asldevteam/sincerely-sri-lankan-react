@@ -42,6 +42,8 @@ export function CalendarInput({ date, setDate, label }: CalendarProps) {
             mode="single"
             selected={date}
             captionLayout="dropdown"
+            fromYear={2000}
+            toYear={2030}
             onSelect={(date) => {
               setDate(date)
               setOpen(false)
