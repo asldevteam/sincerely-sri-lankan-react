@@ -31,9 +31,9 @@ async function fetchOpportunities(filters: {
   startOfEndDateRange: string;
   endOfEndDateRange: string;
   category: string;
-}): Promise<Opportunity[]> {
-  let page = 1;
-  const perPage = 1000;
+}, paginationInput: { page?: number; perPage?: number } = { page: 1, perPage: 1000 }): Promise<Opportunity[]> {
+  let page = paginationInput.page ?? 1;
+  const perPage = paginationInput.perPage ?? 1000;
   let allOpportunities: Opportunity[] = [];
 
   // Map category to programme ID
