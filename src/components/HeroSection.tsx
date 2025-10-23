@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, Play, Volume2, VolumeX } from 'lucide-react';
-import heroImage from '@/assets/hero-sri-lanka.jpg';
+import heroVideo from '@/assets/hero-sri-lanka.mp4';
 
 const HeroSection = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [currentText, setCurrentText] = useState(0);
   
@@ -21,6 +22,12 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   const scrollToNextSection = () => {
     const mapSection = document.getElementById('interactive-map');
     mapSection?.scrollIntoView({ behavior: 'smooth' });
@@ -28,15 +35,25 @@ const HeroSection = () => {
 
   return (
     <section className="hero-video relative">
-      {/* Background Image with Parallax Effect */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-fixed "
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        autoPlay
+        loop
+        muted={isMuted}
+        playsInline
+      >
+        <source src={heroVideo} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       
       {/* Animated Overlay */}
       <div className="hero-overlay bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
-      
+
+      {/* Yellowish Orange Overlay */}
+      <div className="absolute inset-0 bg-secondary/15" />
+
       {/* Cultural Pattern Overlay */}
       <div className="absolute flex inset-0 cultural-pattern opacity-20" />
    
