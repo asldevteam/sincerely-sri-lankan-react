@@ -113,58 +113,58 @@ async function fetchOpportunities(filters: {
     const paging = data?.data?.opportunities?.paging;
 
     const mapped: Opportunity[] = opportunities
-        .filter((op: any) => op.openings && op.openings > 0)
-        .map((op: any) => {
-          let duration = 'N/A';
-          if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
-            const startDate = new Date(op.slots[0].start_date);
-            const endDate = new Date(op.slots[0].end_date);
-            const diffInMs = endDate.getTime() - startDate.getTime();
-            const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+      .filter((op: any) => op.openings && op.openings > 0)
+      .map((op: any) => {
+        let duration = 'N/A';
+        if (op.slots?.[0]?.start_date && op.slots?.[0]?.end_date) {
+          const startDate = new Date(op.slots[0].start_date);
+          const endDate = new Date(op.slots[0].end_date);
+          const diffInMs = endDate.getTime() - startDate.getTime();
+          const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
-            if (diffInDays >= 7) {
-              const weeks = Math.round(diffInDays / 7);
-              duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
-            } else {
-              duration = `${diffInDays} day${diffInDays > 1 ? 's' : ''}`;
-            }
+          if (diffInDays >= 7) {
+            const weeks = Math.round(diffInDays / 7);
+            duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
+          } else {
+            duration = `${diffInDays} day${diffInDays > 1 ? 's' : ''}`;
           }
+        }
 
-          const program = op.programmes?.[0]?.short_name_display;
-          let programSegment: string;
-          switch (program) {
-            case 'GTa':
-              programSegment = 'global-talent';
-              break;
-            case 'GTe':
-              programSegment = 'global-teacher';
-              break;
-            case 'GV':
-              programSegment = 'global-volunteer';
-              break;
-            default:
-              programSegment = 'opportunity';
-          }
+        const program = op.programmes?.[0]?.short_name_display;
+        let programSegment: string;
+        switch (program) {
+          case 'GTa':
+            programSegment = 'global-talent';
+            break;
+          case 'GTe':
+            programSegment = 'global-teacher';
+            break;
+          case 'GV':
+            programSegment = 'global-volunteer';
+            break;
+          default:
+            programSegment = 'opportunity';
+        }
 
-          return {
-            id: op.id,
-            title: op.title,
-            location: op.home_lc?.name || 'Unknown',
-            date: op.slots?.[0]?.start_date || '',
-            duration,
-            participants: `${op.openings} spots`,
-            category: op.programmes?.[0]?.short_name_display || 'N/A',
-            description: '',
-            slots: (op.slots || []).map((s: any, idx: number) => ({
-              id: idx,
-              startingDate: s.start_date,
-              endDate: s.end_date,
-              name: s.title,
-              openings: s.openings,
-            })),
-            applyLink: `https://aiesec.org/opportunity/${programSegment}/${op.id}`,
-          };
-        });
+        return {
+          id: op.id,
+          title: op.title,
+          location: op.home_lc?.name || 'Unknown',
+          date: op.slots?.[0]?.start_date || '',
+          duration,
+          participants: `${op.openings} spots`,
+          category: op.programmes?.[0]?.short_name_display || 'N/A',
+          description: '',
+          slots: (op.slots || []).map((s: any, idx: number) => ({
+            id: idx,
+            startingDate: s.start_date,
+            endDate: s.end_date,
+            name: s.title,
+            openings: s.openings,
+          })),
+          applyLink: `https://aiesec.org/opportunity/${programSegment}/${op.id}`,
+        };
+      });
 
     allOpportunities = allOpportunities.concat(mapped);
 
@@ -252,11 +252,19 @@ const OpportunitySearch = () => {
   ];
 
   const handleSearch = async () => {
+
+    console.log('Starting search with filters:', {
+      startOfStartDateRange,
+      endOfStartDateRange,
+      startOfEndDateRange,
+      endOfEndDateRange,
+      category,
+    }); 
     // Validate required fields
     if (!startOfStartDateRange || !endOfStartDateRange || !category) {
-    setError('Please select a category and complete the Start Date Range');
-    return;
-  }
+      setError('Please select a category and complete the Start Date Range');
+      return;
+    }
 
     setError(null);
     setLoading(true);
@@ -280,119 +288,137 @@ const OpportunitySearch = () => {
   };
 
   return (
-      <section id="opportunities" className="py-20 px-4 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Find Your Opportunity</h2>
+    <section id="opportunities" className="py-20 px-4 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Find Your Opportunity</h2>
 
-          <div className="flex flex-col gap-y-[20px]">
-            {/* Opportunity Search */}
-            <Card className="pt-[25px]">
-              <CardContent className="space-y-4">
-                {error && <div className="text-red-500 text-center">{error}</div>}
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                        placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
-                        value={searchQuery}
-                        onChange={(e) => {
-                          const query = e.target.value;
-                          setSearchQuery(query);
-                          
-                          if (results.length > 0) {
-                            if (query.trim() === '') {
-                              setFilteredResults(results);
-                            } else {
-                              const filtered = results.filter(opportunity => 
-                                opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                                opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
-                                opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
-                                opportunity.description.toLowerCase().includes(query.toLowerCase())
-                              );
-                              setFilteredResults(filtered);
-                            }
-                          }
-                        }}
-                        className="pl-10"
-                        disabled={results.length === 0}
-                    />
-                  </div>
+        <div className="flex flex-col gap-y-[20px]">
+          {/* Opportunity Search */}
+          <Card className="pt-[25px]">
+            <CardContent className="space-y-4">
+              {error && <div className="text-red-500 text-center">{error}</div>}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
+                    value={searchQuery}
+                    onChange={(e) => {
+                      const query = e.target.value;
+                      setSearchQuery(query);
+
+                      if (results.length > 0) {
+                        if (query.trim() === '') {
+                          setFilteredResults(results);
+                        } else {
+                          const filtered = results.filter(opportunity =>
+                            opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                            opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                            opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                            opportunity.description.toLowerCase().includes(query.toLowerCase())
+                          );
+                          setFilteredResults(filtered);
+                        }
+                      }
+                    }}
+                    className="pl-10"
+                    disabled={results.length === 0}
+                  />
                 </div>
+              </div>
 
-                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
-                  <div className="md:col-span-2">
-                    <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
-                  </div>
-                  <DateRangePicker
-  label="Start Date Range"
-  startDate={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
-  endDate={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
-  setStartDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-  setEndDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-/>
-
-<DateRangePicker
-  label="Start Date Range"
-  startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
-  endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
-  setStartDate={(date) => {
-    if (date) {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      setStartOfStartDateRange(`${year}-${month}-${day}`)
-    } else {
-      setStartOfStartDateRange('')
-    }
-  }}
-  setEndDate={(date) => {
-    if (date) {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      setEndOfStartDateRange(`${year}-${month}-${day}`)
-    } else {
-      setEndOfStartDateRange('')
-    }
-  }}
-/>
-                 
-                  <Button
-                      onClick={handleSearch}
-                      className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
-                      disabled={loading}
-                  >
-                    {loading ? 'Searching...' : 'Search Opportunities'}
-                  </Button>
+              <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                <div className="md:col-span-2">
+                  <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
                 </div>
-              </CardContent>
-            </Card>
+                <DateRangePicker
+                  label="Start Date Range"
+                  startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
+                  endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
+                  setStartDate={(date) => {
+                    if (date) {
+                      const year = date.getFullYear()
+                      const month = String(date.getMonth() + 1).padStart(2, '0')
+                      const day = String(date.getDate()).padStart(2, '0')
+                      setStartOfStartDateRange(`${year}-${month}-${day}`)
+                    } else {
+                      setStartOfStartDateRange('')
+                    }
+                  }}
+                  setEndDate={(date) => {
+                    if (date) {
+                      const year = date.getFullYear()
+                      const month = String(date.getMonth() + 1).padStart(2, '0')
+                      const day = String(date.getDate()).padStart(2, '0')
+                      setEndOfStartDateRange(`${year}-${month}-${day}`)
+                    } else {
+                      setEndOfStartDateRange('')
+                    }
+                  }}
+                />
 
-            {/* Search Results */}
-            <div>
-              <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-              {loading ? (
-                  <div className="flex justify-center items-center h-40">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
-                    <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
-                  </div>
-              ) : (
-                  <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-                    <div className="flex flex-col gap-y-[10px] pr-[10px]">
-                      {results.length === 0 ? (
-                          <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
-                      ) : filteredResults.length > 0 ? (
-                          filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
-                      ) : (
-                          <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
-                      )}
-                    </div>
-                  </div>
-              )}
-            </div>
+                <DateRangePicker
+                  label="End Date Range"
+                  startDate={startOfEndDateRange ? new Date(startOfEndDateRange + 'T00:00:00') : undefined}
+                  endDate={endOfEndDateRange ? new Date(endOfEndDateRange + 'T00:00:00') : undefined}
+                  setStartDate={(date) => {
+                    if (date) {
+                      const year = date.getFullYear()
+                      const month = String(date.getMonth() + 1).padStart(2, '0')
+                      const day = String(date.getDate()).padStart(2, '0')
+                      setStartOfEndDateRange(`${year}-${month}-${day}`)
+                    } else {
+                      setStartOfEndDateRange('')
+                    }
+                  }}
+                  setEndDate={(date) => {
+                    if (date) {
+                      const year = date.getFullYear()
+                      const month = String(date.getMonth() + 1).padStart(2, '0')
+                      const day = String(date.getDate()).padStart(2, '0')
+                      setEndOfEndDateRange(`${year}-${month}-${day}`)
+                    } else {
+                      setEndOfEndDateRange('')
+                    }
+                  }}
+                />
+
+                <Button
+                  onClick={handleSearch}
+                  className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
+                  disabled={loading}
+                >
+                  {loading ? 'Searching...' : 'Search Opportunities'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Search Results */}
+          <div>
+            <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+            {loading ? (
+              <div className="flex justify-center items-center h-40">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
+              </div>
+            ) : (
+              <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                  {results.length === 0 ? (
+                    <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                  ) : filteredResults.length > 0 ? (
+                    filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                  ) : (
+                    <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      </section>
+      </div>
+    </section>
   );
 };
 
