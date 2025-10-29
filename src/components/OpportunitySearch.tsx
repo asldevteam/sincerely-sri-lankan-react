@@ -6,7 +6,7 @@ import { Search } from 'lucide-react';
 import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 import OpportunityCard from './OportunityCard';
-import { CalendarInput } from './CalanderInputComponent';
+import { DateRangePicker } from './CalanderInputComponent';
 
 export interface Opportunity {
   id: string;
@@ -254,9 +254,9 @@ const OpportunitySearch = () => {
   const handleSearch = async () => {
     // Validate required fields
     if (!startOfStartDateRange || !endOfStartDateRange || !category) {
-      setError('Please fill in all date range fields and select a category');
-      return;
-    }
+    setError('Please select a category and complete the Start Date Range');
+    return;
+  }
 
     setError(null);
     setLoading(true);
@@ -323,26 +323,39 @@ const OpportunitySearch = () => {
                   <div className="md:col-span-2">
                     <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
                   </div>
-                  <CalendarInput
-                      label="Start of Start Date Range"
-                      date={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
-                      setDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-                  />
-                  <CalendarInput
-                      label="End of Start Date Range"
-                      date={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
-                      setDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
-                  />
-                  <CalendarInput
-                      label="Start of End Date Range"
-                      date={startOfEndDateRange ? new Date(startOfEndDateRange) : undefined}
-                      setDate={(date) => setStartOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-                  />
-                  <CalendarInput
-                      label="End of End Date Range"
-                      date={endOfEndDateRange ? new Date(endOfEndDateRange) : undefined}
-                      setDate={(date) => setEndOfEndDateRange(date ? date.toISOString().split('T')[0] : '')}
-                  />
+                  <DateRangePicker
+  label="Start Date Range"
+  startDate={startOfStartDateRange ? new Date(startOfStartDateRange) : undefined}
+  endDate={endOfStartDateRange ? new Date(endOfStartDateRange) : undefined}
+  setStartDate={(date) => setStartOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+  setEndDate={(date) => setEndOfStartDateRange(date ? date.toISOString().split('T')[0] : '')}
+/>
+
+<DateRangePicker
+  label="Start Date Range"
+  startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
+  endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
+  setStartDate={(date) => {
+    if (date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      setStartOfStartDateRange(`${year}-${month}-${day}`)
+    } else {
+      setStartOfStartDateRange('')
+    }
+  }}
+  setEndDate={(date) => {
+    if (date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      setEndOfStartDateRange(`${year}-${month}-${day}`)
+    } else {
+      setEndOfStartDateRange('')
+    }
+  }}
+/>
                  
                   <Button
                       onClick={handleSearch}
