@@ -1,4 +1,6 @@
 import mapImage from "@/assets/sri-lanka-map.jpg";
+import mapImageMobile from "@/assets/sri-lanka-map-mobile-4-5.jpg";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
@@ -67,12 +69,18 @@ const InteractiveMap = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Interactive Map */}
           <div className="lg:col-span-2">
-            <div className="map-container relative h-[600px] lg:h-[700px] bg-cover bg-center rounded-2xl overflow-hidden border border-border/50">
-              <img
-                src={mapImage}
-                alt="Interactive Sri Lanka Map"
-                className="w-full h-full object-cover"
-              />
+            <AspectRatio
+              ratio={isMobile ? 4 / 5 : 16 / 13}
+              className="map-container relative bg-cover bg-center rounded-2xl overflow-hidden border border-border/50"
+            >
+              <picture>
+                <source media="(max-width: 767px)" srcSet={mapImageMobile} />
+                <img
+                  src={mapImage}
+                  alt="Interactive Sri Lanka Map"
+                  className="w-full h-full object-cover"
+                />
+              </picture>
 
               {/* Destination Markers */}
               {destinations.map((destination) => {
@@ -131,7 +139,7 @@ const InteractiveMap = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </AspectRatio>
           </div>
 
           {/* Destination Details Panel */}
