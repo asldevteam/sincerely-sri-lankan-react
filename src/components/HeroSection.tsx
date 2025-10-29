@@ -52,7 +52,7 @@ const HeroSection = () => {
       <div className="hero-overlay bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
 
       {/* Yellowish Orange Overlay */}
-      <div className="absolute inset-0 bg-secondary/15" />
+      <div className="absolute inset-0 bg-secondary/40" />
 
       {/* Cultural Pattern Overlay */}
       <div className="absolute flex inset-0 cultural-pattern opacity-20" />
