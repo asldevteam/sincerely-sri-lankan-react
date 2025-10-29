@@ -5,8 +5,14 @@ import StoriesSection from '@/components/StoriesSection';
 import OpportunitySearch from '@/components/OpportunitySearch';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
+import { useNavigate } from "react-router-dom";
+
 
 const Index = () => {
+  const navigate = useNavigate();
+  const searchOpportunityPage = () => {
+    navigate("/search-opportunity"); 
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -29,7 +35,9 @@ const Index = () => {
       
       {/* Opportunity Search Tools */}
       <section id="experiences">
-        <OpportunitySearch />
+        <button onClick={searchOpportunityPage}>
+
+        </button>
       </section>
       
       {/* FAQ Section */}
