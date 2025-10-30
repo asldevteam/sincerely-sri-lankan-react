@@ -124,17 +124,38 @@ const InteractiveMap = () => {
               })}
 
               {/* Map Legend */}
-              <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg p-4 border border-border/50">
-                <h3 className="font-semibold mb-3 text-sm">
+              <div
+                className={`absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border/50 ${
+                  isMobile ? "p-2" : "p-4"
+                }`}
+              >
+                <h3
+                  className={`font-semibold ${
+                    isMobile ? "mb-1 text-[10px]" : "mb-3 text-sm"
+                  }`}
+                >
                   Destination Types
                 </h3>
-                <div className="space-y-2">
+                <div className={isMobile ? "space-y-1" : "space-y-2"}>
                   {["cultural", "beach", "nature", "adventure"].map((type) => (
-                    <div key={type} className="flex items-center gap-2">
+                    <div
+                      key={type}
+                      className={`flex items-center ${
+                        isMobile ? "gap-1" : "gap-2"
+                      }`}
+                    >
                       <div
-                        className={`w-3 h-3 rounded-full ${getTypeColor(type)}`}
+                        className={`rounded-full ${getTypeColor(type)} ${
+                          isMobile ? "w-2 h-2" : "w-3 h-3"
+                        }`}
                       />
-                      <span className="text-xs capitalize">{type}</span>
+                      <span
+                        className={`capitalize ${
+                          isMobile ? "text-[9px]" : "text-xs"
+                        }`}
+                      >
+                        {type}
+                      </span>
                     </div>
                   ))}
                 </div>
