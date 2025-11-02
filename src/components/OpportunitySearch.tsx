@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
@@ -186,7 +187,7 @@ const OpportunitySearch = () => {
   const [error, setError] = useState<string | null>(null);
   const [location, setLocation] = useState('');
   const [duration, setDuration] = useState('');
-  const [category, setCategory] = useState('');
+  const [activeTab, setActiveTab] = useState('GV');
   const [sdg, setSdg] = useState('');
   const [workfield, setWorkfield] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
@@ -251,7 +252,7 @@ const OpportunitySearch = () => {
     { value: 'GTe', label: 'Global Teacher' },
   ];
 
-  const handleSearch = async () => {
+  const handleSearch = async (category: string) => {
 
     console.log('Starting search with filters:', {
       startOfStartDateRange,
@@ -259,10 +260,10 @@ const OpportunitySearch = () => {
       startOfEndDateRange,
       endOfEndDateRange,
       category,
-    }); 
+    });
     // Validate required fields
-    if (!startOfStartDateRange || !endOfStartDateRange || !category) {
-      setError('Please select a category and complete the Start Date Range');
+    if (!startOfStartDateRange || !endOfStartDateRange) {
+      setError('Please complete the Start Date Range');
       return;
     }
 
@@ -292,131 +293,378 @@ const OpportunitySearch = () => {
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Find Your Opportunity</h2>
 
-        <div className="flex flex-col gap-y-[20px]">
-          {/* Opportunity Search */}
-          <Card className="pt-[25px]">
-            <CardContent className="space-y-4">
-              {error && <div className="text-red-500 text-center">{error}</div>}
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
-                    value={searchQuery}
-                    onChange={(e) => {
-                      const query = e.target.value;
-                      setSearchQuery(query);
+        <Tabs defaultValue="GV" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="GV">Global Volunteer</TabsTrigger>
+            <TabsTrigger value="GTa">Global Talent</TabsTrigger>
+            <TabsTrigger value="GTe">Global Teacher</TabsTrigger>
+          </TabsList>
 
-                      if (results.length > 0) {
-                        if (query.trim() === '') {
-                          setFilteredResults(results);
-                        } else {
-                          const filtered = results.filter(opportunity =>
-                            opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                            opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
-                            opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
-                            opportunity.description.toLowerCase().includes(query.toLowerCase())
-                          );
-                          setFilteredResults(filtered);
+          <TabsContent value="GV" className="space-y-[20px]">
+            <Card className="pt-[25px]">
+              <CardContent className="space-y-4">
+                {error && <div className="text-red-500 text-center">{error}</div>}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
+                      value={searchQuery}
+                      onChange={(e) => {
+                        const query = e.target.value;
+                        setSearchQuery(query);
+
+                        if (results.length > 0) {
+                          if (query.trim() === '') {
+                            setFilteredResults(results);
+                          } else {
+                            const filtered = results.filter(opportunity =>
+                              opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.description.toLowerCase().includes(query.toLowerCase())
+                            );
+                            setFilteredResults(filtered);
+                          }
                         }
+                      }}
+                      className="pl-10"
+                      disabled={results.length === 0}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                  <DateRangePicker
+                    label="Start Date Range"
+                    startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfStartDateRange('')
                       }
                     }}
-                    className="pl-10"
-                    disabled={results.length === 0}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfStartDateRange('')
+                      }
+                    }}
                   />
+
+                  <DateRangePicker
+                    label="End Date Range"
+                    startDate={startOfEndDateRange ? new Date(startOfEndDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfEndDateRange ? new Date(endOfEndDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfEndDateRange('')
+                      }
+                    }}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfEndDateRange('')
+                      }
+                    }}
+                  />
+
+                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg} onSelect={setSdg} />
+
+                  <Button
+                    onClick={() => handleSearch('GV')}
+                    className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
+                    disabled={loading}
+                  >
+                    {loading ? 'Searching...' : 'Search Opportunities'}
+                  </Button>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
-                <div className="md:col-span-2">
-                  <DropdownComponent label="Select Category" options={categoryOptions} selectedOption={category} onSelect={setCategory} />
+            <div>
+              <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+              {loading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                  <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
                 </div>
-                <DateRangePicker
-                  label="Start Date Range"
-                  startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
-                  endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
-                  setStartDate={(date) => {
-                    if (date) {
-                      const year = date.getFullYear()
-                      const month = String(date.getMonth() + 1).padStart(2, '0')
-                      const day = String(date.getDate()).padStart(2, '0')
-                      setStartOfStartDateRange(`${year}-${month}-${day}`)
-                    } else {
-                      setStartOfStartDateRange('')
-                    }
-                  }}
-                  setEndDate={(date) => {
-                    if (date) {
-                      const year = date.getFullYear()
-                      const month = String(date.getMonth() + 1).padStart(2, '0')
-                      const day = String(date.getDate()).padStart(2, '0')
-                      setEndOfStartDateRange(`${year}-${month}-${day}`)
-                    } else {
-                      setEndOfStartDateRange('')
-                    }
-                  }}
-                />
-
-                <DateRangePicker
-                  label="End Date Range"
-                  startDate={startOfEndDateRange ? new Date(startOfEndDateRange + 'T00:00:00') : undefined}
-                  endDate={endOfEndDateRange ? new Date(endOfEndDateRange + 'T00:00:00') : undefined}
-                  setStartDate={(date) => {
-                    if (date) {
-                      const year = date.getFullYear()
-                      const month = String(date.getMonth() + 1).padStart(2, '0')
-                      const day = String(date.getDate()).padStart(2, '0')
-                      setStartOfEndDateRange(`${year}-${month}-${day}`)
-                    } else {
-                      setStartOfEndDateRange('')
-                    }
-                  }}
-                  setEndDate={(date) => {
-                    if (date) {
-                      const year = date.getFullYear()
-                      const month = String(date.getMonth() + 1).padStart(2, '0')
-                      const day = String(date.getDate()).padStart(2, '0')
-                      setEndOfEndDateRange(`${year}-${month}-${day}`)
-                    } else {
-                      setEndOfEndDateRange('')
-                    }
-                  }}
-                />
-
-                <Button
-                  onClick={handleSearch}
-                  className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
-                  disabled={loading}
-                >
-                  {loading ? 'Searching...' : 'Search Opportunities'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Search Results */}
-          <div>
-            <h3 className="text-2xl font-bold mb-6">Search Results</h3>
-            {loading ? (
-              <div className="flex justify-center items-center h-40">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
-                <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
-              </div>
-            ) : (
-              <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-                <div className="flex flex-col gap-y-[10px] pr-[10px]">
-                  {results.length === 0 ? (
-                    <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
-                  ) : filteredResults.length > 0 ? (
-                    filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
-                  ) : (
-                    <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
-                  )}
+              ) : (
+                <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                  <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                    {results.length === 0 ? (
+                      <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                    ) : filteredResults.length > 0 ? (
+                      filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                    ) : (
+                      <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="GTa" className="space-y-[20px]">
+            <Card className="pt-[25px]">
+              <CardContent className="space-y-4">
+                {error && <div className="text-red-500 text-center">{error}</div>}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
+                      value={searchQuery}
+                      onChange={(e) => {
+                        const query = e.target.value;
+                        setSearchQuery(query);
+
+                        if (results.length > 0) {
+                          if (query.trim() === '') {
+                            setFilteredResults(results);
+                          } else {
+                            const filtered = results.filter(opportunity =>
+                              opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.description.toLowerCase().includes(query.toLowerCase())
+                            );
+                            setFilteredResults(filtered);
+                          }
+                        }
+                      }}
+                      className="pl-10"
+                      disabled={results.length === 0}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                  <DateRangePicker
+                    label="Start Date Range"
+                    startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfStartDateRange('')
+                      }
+                    }}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfStartDateRange('')
+                      }
+                    }}
+                  />
+
+                  <DateRangePicker
+                    label="End Date Range"
+                    startDate={startOfEndDateRange ? new Date(startOfEndDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfEndDateRange ? new Date(endOfEndDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfEndDateRange('')
+                      }
+                    }}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfEndDateRange('')
+                      }
+                    }}
+                  />
+
+                  <Button
+                    onClick={() => handleSearch('GTa')}
+                    className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
+                    disabled={loading}
+                  >
+                    {loading ? 'Searching...' : 'Search Opportunities'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div>
+              <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+              {loading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                  <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
+                </div>
+              ) : (
+                <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                  <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                    {results.length === 0 ? (
+                      <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                    ) : filteredResults.length > 0 ? (
+                      filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                    ) : (
+                      <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="GTe" className="space-y-[20px]">
+            <Card className="pt-[25px]">
+              <CardContent className="space-y-4">
+                {error && <div className="text-red-500 text-center">{error}</div>}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder={results.length > 0 ? "Search opportunities..." : "Use filters first to get results, then search"}
+                      value={searchQuery}
+                      onChange={(e) => {
+                        const query = e.target.value;
+                        setSearchQuery(query);
+
+                        if (results.length > 0) {
+                          if (query.trim() === '') {
+                            setFilteredResults(results);
+                          } else {
+                            const filtered = results.filter(opportunity =>
+                              opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.description.toLowerCase().includes(query.toLowerCase())
+                            );
+                            setFilteredResults(filtered);
+                          }
+                        }
+                      }}
+                      className="pl-10"
+                      disabled={results.length === 0}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 p-4 border border-border rounded-lg animate-fade-in">
+                  <DateRangePicker
+                    label="Start Date Range"
+                    startDate={startOfStartDateRange ? new Date(startOfStartDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfStartDateRange ? new Date(endOfStartDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfStartDateRange('')
+                      }
+                    }}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfStartDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfStartDateRange('')
+                      }
+                    }}
+                  />
+
+                  <DateRangePicker
+                    label="End Date Range"
+                    startDate={startOfEndDateRange ? new Date(startOfEndDateRange + 'T00:00:00') : undefined}
+                    endDate={endOfEndDateRange ? new Date(endOfEndDateRange + 'T00:00:00') : undefined}
+                    setStartDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setStartOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setStartOfEndDateRange('')
+                      }
+                    }}
+                    setEndDate={(date) => {
+                      if (date) {
+                        const year = date.getFullYear()
+                        const month = String(date.getMonth() + 1).padStart(2, '0')
+                        const day = String(date.getDate()).padStart(2, '0')
+                        setEndOfEndDateRange(`${year}-${month}-${day}`)
+                      } else {
+                        setEndOfEndDateRange('')
+                      }
+                    }}
+                  />
+
+                  <Button
+                    onClick={() => handleSearch('GTe')}
+                    className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
+                    disabled={loading}
+                  >
+                    {loading ? 'Searching...' : 'Search Opportunities'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div>
+              <h3 className="text-2xl font-bold mb-6">Search Results</h3>
+              {loading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+                  <span className="ml-4 text-lg text-muted-foreground">Loading opportunities...</span>
+                </div>
+              ) : (
+                <div className="flex flex-col max-h-[600px] border-white rounded-xl overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
+                  <div className="flex flex-col gap-y-[10px] pr-[10px]">
+                    {results.length === 0 ? (
+                      <p className="text-center text-muted-foreground">No opportunities found. Please try searching with different filters.</p>
+                    ) : filteredResults.length > 0 ? (
+                      filteredResults.map((result) => <OpportunityCard key={result.id} opportunity={result} />)
+                    ) : (
+                      <p className="text-center text-muted-foreground">No opportunities match your search. Try different keywords.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </section>
   );
