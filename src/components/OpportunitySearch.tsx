@@ -8,6 +8,7 @@ import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 import OpportunityCard from './OportunityCard';
 import { DateRangePicker } from './CalanderInputComponent';
+import { console } from 'inspector';
 
 export interface Opportunity {
   id: string;
@@ -32,6 +33,7 @@ async function fetchOpportunities(filters: {
   startOfEndDateRange: string;
   endOfEndDateRange: string;
   category: string;
+  sdg?: string[];
 }): Promise<Opportunity[]> {
   let page = 1;
   const perPage = 1000;
@@ -46,7 +48,8 @@ async function fetchOpportunities(filters: {
 
   while (true) {
     const query = `query {
-      opportunities(page: ${page}, per_page: ${perPage}, filters: {
+      opportunities(page: ${page}, per_page: ${perPage}, 
+      filters: {
         status: "open",
         committee: 1623,
         earliest_start_date: {
@@ -58,6 +61,7 @@ async function fetchOpportunities(filters: {
           to: "${filters.endOfEndDateRange}"
         },
         ${filters.category ? `programmes: ${categoryMap[filters.category] || 0},` : ''}
+      ${filters.sdg && filters.sdg.length > 0 ? `sdg_targets: [${filters.sdg.join(', ')}],` : ''}
       }) {
         data {
           id
@@ -88,6 +92,7 @@ async function fetchOpportunities(filters: {
       },
       body: JSON.stringify({ query }),
     });
+    console.log("response",response);
 
     if (!response.ok) {
       console.error("GraphQL request failed with HTTP code:", response.status);
@@ -111,6 +116,7 @@ async function fetchOpportunities(filters: {
     }
 
     const opportunities = data?.data?.opportunities?.data || [];
+    console.log("opportunities", opportunities);
     const paging = data?.data?.opportunities?.paging;
 
     const mapped: Opportunity[] = opportunities
@@ -123,6 +129,7 @@ async function fetchOpportunities(filters: {
           const diffInMs = endDate.getTime() - startDate.getTime();
           const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
+          console.log("start end diffinM ", startDate, endDate, diffInMs, diffInMs);
           if (diffInDays >= 7) {
             const weeks = Math.round(diffInDays / 7);
             duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
@@ -132,6 +139,7 @@ async function fetchOpportunities(filters: {
         }
 
         const program = op.programmes?.[0]?.short_name_display;
+        console.log("program",program);
         let programSegment: string;
         switch (program) {
           case 'GTa':
@@ -188,7 +196,7 @@ const OpportunitySearch = () => {
   const [location, setLocation] = useState('');
   const [duration, setDuration] = useState('');
   const [activeTab, setActiveTab] = useState('GV');
-  const [sdg, setSdg] = useState('');
+  const [sdg, setSdg] = useState<string[]>([]);
   const [workfield, setWorkfield] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
@@ -277,9 +285,17 @@ const OpportunitySearch = () => {
         startOfEndDateRange,
         endOfEndDateRange,
         category,
+        sdg,
       });
+      console.log("apidata start of start",apiData[startOfStartDateRange])
+      console.log("apidata end of start",apiData[endOfStartDateRange])
+      console.log("apidata start of end",apiData[startOfEndDateRange])
+      console.log("apidata end of end",apiData[endOfEndDateRange])
       setResults(apiData);
+      console.log("results",results);
       setFilteredResults(apiData);
+      console.log("")
+      console.log("filtered results before",apiData);
     } catch (err) {
       console.error('Error fetching API data:', err);
       setError('Failed to fetch opportunities. Please try again.');
@@ -325,6 +341,8 @@ const OpportunitySearch = () => {
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+                            console.log("filtered results after", filteredResults);
+
                           }
                         }
                       }}
@@ -387,7 +405,8 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg} onSelect={setSdg} />
+                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)} 
+ />
 
                   <Button
                     onClick={() => handleSearch('GV')}
@@ -448,6 +467,8 @@ const OpportunitySearch = () => {
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+                           console.log("filtered results after", filteredResults);
+
                           }
                         }
                       }}
@@ -569,6 +590,7 @@ const OpportunitySearch = () => {
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+
                           }
                         }
                       }}
@@ -589,6 +611,7 @@ const OpportunitySearch = () => {
                         const month = String(date.getMonth() + 1).padStart(2, '0')
                         const day = String(date.getDate()).padStart(2, '0')
                         setStartOfStartDateRange(`${year}-${month}-${day}`)
+                        console.log("Input - Start Date Range - start Date:", startOfStartDateRange); // ✅ log here
                       } else {
                         setStartOfStartDateRange('')
                       }

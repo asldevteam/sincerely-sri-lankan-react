@@ -10,13 +10,18 @@ interface DropdownOption {
 interface DropdownComponentProps {
   label: string;
   options: DropdownOption[];
-  selectedOption: string;
-  onSelect: (value: string) => void;
+  selectedOption: string[];
+  onSelect: (value: string[]) => void;
 }
 
 const DropdownComponent: React.FC<DropdownComponentProps> = ({ label, options, selectedOption, onSelect }) => {
-  // Find the display label for the selected value
-  const selectedLabel = options.find(option => option.value === selectedOption)?.label || selectedOption;
+  // Build a display label from the selected values (supports multi-select)
+  const selectedLabel = selectedOption.length > 0
+    ? options
+        .filter(option => selectedOption.includes(option.value))
+        .map(option => option.label)
+        .join(', ')
+    : '';
 
   return (
     <div>
@@ -32,13 +37,17 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({ label, options, s
                 className="w-full cursor-pointer border border-border hover:border-primary focus:border-primary focus:outline-none"
               />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[200px] p-4 max-h-[200px] overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-500">
-              <DropdownMenuLabel>Select {label}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent>
               {options.map(option => (
-                <DropdownMenuItem 
-                  key={option.value} 
-                  onSelect={() => onSelect(option.value)} 
+                <DropdownMenuItem
+                  key={option.value}
+                  onSelect={() => {
+                    const isSelected = selectedOption.includes(option.value);
+                    const newSelection = isSelected
+                      ? selectedOption.filter(v => v !== option.value)
+                      : [...selectedOption, option.value];
+                    onSelect(newSelection);
+                  }}
                   className="cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
                 >
                   {option.label}
