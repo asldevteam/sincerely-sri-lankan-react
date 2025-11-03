@@ -8,7 +8,6 @@ import { useState } from 'react';
 import DropdownComponent from './DropdownComponent';
 import OpportunityCard from './OportunityCard';
 import { DateRangePicker } from './CalanderInputComponent';
-import { console } from 'inspector';
 
 export interface Opportunity {
   id: string;
@@ -60,8 +59,8 @@ async function fetchOpportunities(filters: {
           from: "${filters.startOfEndDateRange}",
           to: "${filters.endOfEndDateRange}"
         },
-        ${filters.category ? `programmes: ${categoryMap[filters.category] || 0},` : ''}
-      ${filters.sdg && filters.sdg.length > 0 ? `sdg_targets: [${filters.sdg.join(', ')}],` : ''}
+        ${filters.category ? `programmes: [${categoryMap[filters.category] || 0}],` : ''}
+      ${filters.sdg && filters.sdg.length > 0 ? `sdg_goals: [${filters.sdg.join(', ')}],` : ''}
       }) {
         data {
           id
@@ -83,6 +82,8 @@ async function fetchOpportunities(filters: {
         }
       }
     }`;
+
+    console.log(query);
 
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: 'POST',
@@ -204,23 +205,23 @@ const OpportunitySearch = () => {
   const [endOfEndDateRange, setEndOfEndDateRange] = useState('');
 
   const sdgOptions = [
-    { value: 'no-poverty', label: 'No Poverty' },
-    { value: 'zero-hunger', label: 'Zero Hunger' },
-    { value: 'good-health', label: 'Good Health' },
-    { value: 'quality-education', label: 'Quality Education' },
-    { value: 'gender-equality', label: 'Gender Equality' },
-    { value: 'clean-water', label: 'Clean Water' },
-    { value: 'affordable-energy', label: 'Affordable Energy' },
-    { value: 'decent-work', label: 'Decent Work' },
-    { value: 'industry-innovation', label: 'Industry Innovation' },
-    { value: 'reduced-inequalities', label: 'Reduced Inequalities' },
-    { value: 'sustainable-cities', label: 'Sustainable Cities' },
-    { value: 'responsible-consumption', label: 'Responsible Consumption' },
-    { value: 'climate-action', label: 'Climate Action' },
-    { value: 'life-below-water', label: 'Life Below Water' },
-    { value: 'life-on-land', label: 'Life on Land' },
-    { value: 'peace-justice', label: 'Peace Justice' },
-    { value: 'partnerships-for-goals', label: 'Partnerships for Goals' },
+    { value: '11101', label: 'No Poverty' },
+    { value: '11102', label: 'Zero Hunger' },
+    { value: '11103', label: 'Good Health' },
+    { value: '11104', label: 'Quality Education' },
+    { value: '11105', label: 'Gender Equality' },
+    { value: '11106', label: 'Clean Water' },
+    { value: '11107', label: 'Affordable Energy' },
+    { value: '11108', label: 'Decent Work' },
+    { value: '11109', label: 'Industry Innovation' },
+    { value: '11110', label: 'Reduced Inequalities' },
+    { value: '11111', label: 'Sustainable Cities' },
+    { value: '11112', label: 'Responsible Consumption' },
+    { value: '11113', label: 'Climate Action' },
+    { value: '11114', label: 'Life Below Water' },
+    { value: '11115', label: 'Life on Land' },
+    { value: '11116', label: 'Peace Justice' },
+    { value: '11117', label: 'Partnerships for Goals' },
   ];
 
   const workFieldOptions = [
