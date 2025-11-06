@@ -198,6 +198,7 @@ const OpportunitySearch = () => {
   const [duration, setDuration] = useState('');
   const [activeTab, setActiveTab] = useState('GV');
   const [sdg, setSdg] = useState<string[]>([]);
+  const [background, setBackground] = useState('');
   const [workfield, setWorkfield] = useState('');
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
@@ -225,13 +226,24 @@ const OpportunitySearch = () => {
   ];
 
   const workFieldOptions = [
-    { value: '54', label: 'Business Administration' },
-    { value: '55', label: 'Information Technology' },
-    { value: '56', label: 'Marketing' },
-    { value: '57', label: 'Engineering' },
-    { value: '59', label: 'Finance' },
-    { value: '60', label: 'Business Development' },
-    { value: '58', label: 'Other' },
+    { value: 'business-administration', label: 'Business Administration' },
+    { value: 'business-analyst', label: 'Business Analyst' },
+    { value: 'business-development', label: 'Business Development' },
+    { value: 'content-creator', label: 'Content Creator' },
+    { value: 'customer-service', label: 'Customer Service' },
+    { value: 'data-analyst', label: 'Data Analyst' },
+    { value: 'digital-marketing', label: 'Digital Marketing' },
+    { value: 'finance', label: 'Finance' },
+    { value: 'graphic-designer', label: 'Graphic Designer' },
+    { value: 'guest-relations', label: 'Guest Relations Specialist' },
+    { value: 'hr-recruitment', label: 'HR/Recruitment' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'project-management', label: 'Project Management' },
+    { value: 'receptionist', label: 'Receptionist' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'software-engineer', label: 'Software Engineer' },
+    { value: 'ui-ux-designer', label: 'UI/UX Designer' },
+    { value: 'web-developer', label: 'Web Developer' },
   ];
 
   const locationOptions = [
@@ -259,6 +271,22 @@ const OpportunitySearch = () => {
     { value: 'GV', label: 'Global Volunteer' },
     { value: 'GTa', label: 'Global Talent' },
     { value: 'GTe', label: 'Global Teacher' },
+  ];
+
+  const backgroundOptions = [
+    { value: 'arts-humanities', label: 'Arts/Humanities Background' },
+    { value: 'business', label: 'Business Background' },
+    { value: 'education', label: 'Education Background' },
+    { value: 'engineering', label: 'Engineering Background' },
+    { value: 'european', label: 'European' },
+    { value: 'female', label: 'Female' },
+    { value: 'it-computer-science', label: 'IT/Computer Science Background' },
+    { value: 'law', label: 'Law Background' },
+    { value: 'male', label: 'Male' },
+    { value: 'medical-health', label: 'Medical/Health Background' },
+    { value: 'non-asian', label: 'Non-Asian' },
+    { value: 'science', label: 'Science Background' },
+    { value: 'social-sciences', label: 'Social Sciences Background' },
   ];
 
   const handleSearch = async (category: string) => {
@@ -406,7 +434,8 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)} 
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)}
  />
 
                   <Button
@@ -532,6 +561,12 @@ const OpportunitySearch = () => {
                     }}
                   />
 
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+
+                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
+
+                  <DropdownComponent label="Select Work Field (Optional)" options={workFieldOptions} selectedOption={workfield} onSelect={setWorkfield} />
+
                   <Button
                     onClick={() => handleSearch('GTa')}
                     className="w-full bg-primary text-black hover:bg-primary/90 focus:bg-primary/90 text-md md:col-span-2"
@@ -654,6 +689,10 @@ const OpportunitySearch = () => {
                       }
                     }}
                   />
+
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+
+                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
 
                   <Button
                     onClick={() => handleSearch('GTe')}
