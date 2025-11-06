@@ -12,7 +12,7 @@ import { DateRangePicker } from './CalanderInputComponent';
 export interface Opportunity {
   id: string;
   title: string;
-  location: string;
+  committee: string;
   date: string;
   duration: string;
   participants: string;
@@ -33,6 +33,9 @@ async function fetchOpportunities(filters: {
   endOfEndDateRange: string;
   category: string;
   sdg?: string[];
+  committee?: string[];
+  workField?: string[];
+  background?: string[];
 }): Promise<Opportunity[]> {
   let page = 1;
   const perPage = 1000;
@@ -60,7 +63,10 @@ async function fetchOpportunities(filters: {
           to: "${filters.endOfEndDateRange}"
         },
         ${filters.category ? `programmes: [${categoryMap[filters.category] || 0}],` : ''}
-      ${filters.sdg && filters.sdg.length > 0 ? `sdg_goals: [${filters.sdg.join(', ')}],` : ''}
+        ${filters.sdg && filters.sdg.length > 0 ? `sdg_goals: [${filters.sdg.join(', ')}],` : ''}
+        ${filters.committee && filters.committee.length > 0 ? `committee_scope: [${filters.committee.join(', ')}],` : ''}
+        ${filters.background && filters.background.length > 0 ? `background_ids: [${filters.background.join(', ')}],` : ''}
+        ${filters.workField && filters.workField.length > 0 ? `sub_products: [${filters.workField.join(', ')}],` : ''}
       }) {
         data {
           id
@@ -159,7 +165,7 @@ async function fetchOpportunities(filters: {
         return {
           id: op.id,
           title: op.title,
-          location: op.home_lc?.name || 'Unknown',
+          committee: op.home_lc?.name || 'Unknown',
           date: op.slots?.[0]?.start_date || '',
           duration,
           participants: `${op.openings} spots`,
@@ -194,12 +200,12 @@ const OpportunitySearch = () => {
   const [filteredResults, setFilteredResults] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState('');
+  const [committee, setLocation] = useState<string[]>([]);
   const [duration, setDuration] = useState('');
   const [activeTab, setActiveTab] = useState('GV');
   const [sdg, setSdg] = useState<string[]>([]);
-  const [background, setBackground] = useState('');
-  const [workfield, setWorkfield] = useState('');
+  const [background, setBackground] = useState<string[]>([]);
+  const [workField, setWorkfield] = useState<string[]>([]);
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
   const [startOfEndDateRange, setStartOfEndDateRange] = useState('');
@@ -226,37 +232,26 @@ const OpportunitySearch = () => {
   ];
 
   const workFieldOptions = [
-    { value: 'business-administration', label: 'Business Administration' },
-    { value: 'business-analyst', label: 'Business Analyst' },
-    { value: 'business-development', label: 'Business Development' },
-    { value: 'content-creator', label: 'Content Creator' },
-    { value: 'customer-service', label: 'Customer Service' },
-    { value: 'data-analyst', label: 'Data Analyst' },
-    { value: 'digital-marketing', label: 'Digital Marketing' },
-    { value: 'finance', label: 'Finance' },
-    { value: 'graphic-designer', label: 'Graphic Designer' },
-    { value: 'guest-relations', label: 'Guest Relations Specialist' },
-    { value: 'hr-recruitment', label: 'HR/Recruitment' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'project-management', label: 'Project Management' },
-    { value: 'receptionist', label: 'Receptionist' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'software-engineer', label: 'Software Engineer' },
-    { value: 'ui-ux-designer', label: 'UI/UX Designer' },
-    { value: 'web-developer', label: 'Web Developer' },
+    { value: '54', label: 'Business Administration' },
+    { value: '55', label: 'Information Technology' },
+    { value: '56', label: 'Marketing' },
+    { value: '57', label: 'Engineering' },
+    { value: '58', label: 'Other' },
+    { value: '60', label: 'Business Development' },
+    { value: '59', label: 'Finance' }
   ];
 
   const locationOptions = [
-    { value: 'COLOMBO CENTRAL', label: 'Colombo Central' },
-    { value: 'COLOMBO NORTH', label: 'Colombo North' },
-    { value: 'COLOMBO SOUTH', label: 'Colombo South' },
-    { value: 'KANDY', label: 'Kandy' },
-    { value: 'NIBM', label: 'NIBM' },
-    { value: 'NSBM', label: 'NSBM' },
-    { value: 'RAJARATA', label: 'Rajarata' },
-    { value: 'RUHUNA', label: 'Ruhuna' },
-    { value: 'SLIIT', label: 'SLIIT' },
-    { value: 'USJ', label: 'USJ' },
+    { value: '222', label: 'Colombo Central' },
+    { value: '872', label: 'Colombo North' },
+    { value: '1340', label: 'Colombo South' },
+    { value: '2204', label: 'Kandy' },
+    { value: '4535', label: 'NIBM' },
+    { value: '2186', label: 'NSBM' },
+    { value: '5490', label: 'Rajarata' },
+    { value: '2175', label: 'Ruhuna' },
+    { value: '2188', label: 'SLIIT' },
+    { value: '221', label: 'USJ' }
   ];
 
   const durationOptions = [
@@ -306,6 +301,7 @@ const OpportunitySearch = () => {
 
     setError(null);
     setLoading(true);
+    console.log(workField)
 
     try {
       const apiData = await fetchOpportunities({
@@ -315,6 +311,9 @@ const OpportunitySearch = () => {
         endOfEndDateRange,
         category,
         sdg,
+        committee,
+        workField,
+        background,
       });
       console.log("apidata start of start",apiData[startOfStartDateRange])
       console.log("apidata end of start",apiData[endOfStartDateRange])
@@ -365,7 +364,7 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
@@ -434,9 +433,8 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
-                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)}
- />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={(selectedIds) => setLocation(selectedIds)} />
+                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)} />
 
                   <Button
                     onClick={() => handleSearch('GV')}
@@ -492,7 +490,7 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
@@ -561,11 +559,12 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={(selectedIds) => setLocation(selectedIds)} />
 
-                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
 
-                  <DropdownComponent label="Select Work Field (Optional)" options={workFieldOptions} selectedOption={workfield} onSelect={setWorkfield} />
+                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={(selectedIds) => setBackground(selectedIds)} />
+
+                  <DropdownComponent label="Select Work Field (Optional)" options={workFieldOptions} selectedOption={workField} onSelect={(selectedIds) => setWorkfield(selectedIds)} />
 
                   <Button
                     onClick={() => handleSearch('GTa')}
@@ -621,7 +620,7 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
@@ -690,7 +689,7 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={setLocation} />
 
                   <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
 
