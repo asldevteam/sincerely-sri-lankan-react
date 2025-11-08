@@ -32,7 +32,7 @@ const OpportunityCard = ({ opportunity }: { opportunity: Opportunity }) => {
           <div className=" text-sm gap-x-4 flex flex-col md:flex-row">
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4" />
-              <span>{opportunity.location}</span>
+              <span>{opportunity.committee}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="w-4 h-4" />

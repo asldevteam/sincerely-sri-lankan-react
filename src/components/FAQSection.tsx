@@ -1,12 +1,16 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
 } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MessageCircle } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useState } from 'react';
 
 interface FAQ {
   id: string;
@@ -14,50 +18,83 @@ interface FAQ {
   answer: string;
 }
 
-const faqs: FAQ[] = [
-  {
-    id: '1',
-    question: 'Do I need a visa to visit Sri Lanka?',
-    answer: 'Most travelers need an Electronic Travel Authorization (ETA) which can be obtained online before arrival. The ETA is valid for 30 days and costs around $20. Some countries have visa-free entry. Check the official Sri Lanka Immigration website for the most current requirements.',
-  },
-  {
-    id: '2',
-    question: 'How much should I budget for a 2-week trip?',
-    answer: 'For backpackers: $30-50/day (hostels, local food, public transport). Mid-range: $50-100/day (guesthouses, mix of local/tourist restaurants, private transport). Luxury: $100+/day (hotels, fine dining, private tours). This includes accommodation, food, transport, and activities.',
-  },
-  {
-    id: '3',
-    question: 'What\'s the best time to visit Sri Lanka?',
-    answer: 'Sri Lanka has two monsoon seasons, so timing depends on your destinations. West/South coasts: December-March. East coast: April-September. Hill country: January-March and July-September. The shoulder seasons often offer the best balance of weather and fewer crowds.',
-  },
-  {
-    id: '4',
-    question: 'Is Sri Lanka safe for solo female travelers?',
-    answer: 'Sri Lanka is generally safe for solo female travelers. Use common sense: dress modestly (especially at religious sites), avoid isolated areas at night, and stay in reputable accommodations. Many solo female travelers have amazing experiences here. Trust your instincts and connect with other travelers.',
-  },
-  {
-    id: '5',
-    question: 'How do I get around Sri Lanka?',
-    answer: 'Trains are scenic and affordable (especially the Kandy-Ella route). Buses are cheap but can be crowded. Tuk-tuks for short distances. Private drivers for comfort and flexibility. Motorbike rentals for the adventurous (international license required).',
-  },
-  {
-    id: '6',
-    question: 'What should I know about Sri Lankan culture?',
-    answer: 'Sri Lankans are incredibly welcoming! Remove shoes when entering homes and temples. Dress modestly at religious sites. The right hand is used for eating and greeting. Pointing with your index finger is considered rude - use your whole hand. Learning a few Sinhala or Tamil phrases goes a long way.',
-  },
-  {
-    id: '7',
-    question: 'What food should I try and any dietary considerations?',
-    answer: 'Must-try: Rice and curry, hoppers, kottu roti, fresh seafood, tropical fruits. Vegetarian/vegan options are abundant. Food can be very spicy - ask for "not spicy" if needed. Stick to bottled water and well-cooked food. Street food is generally safe but use your judgment.',
-  },
-  {
-    id: '8',
-    question: 'How many days do I need to see Sri Lanka?',
-    answer: 'Minimum 10-14 days for highlights (Colombo, Kandy, Sigiriya, hill country, southern beaches). 3-4 weeks for a comprehensive trip including east coast and northern regions. Even a week can give you a great taste if you focus on 2-3 regions.',
-  },
-];
+const faqCategories = {
+  visa: [
+    
+    {
+      id: 'visa-1',
+      question: 'Do I need a visa to volunteer in Sri Lanka?',
+      answer: 'Yes, you\'ll need to apply for a short-term visit visa (tourist visa) before your arrival. AIESEC will guide you through the process and provide the required documents to support your application.',
+    },
+    {
+      id: 'visa-2',
+      question: 'Can I extend my visa if I want to stay longer?',
+      answer: 'Yes, visa extensions are possible at the Department of Immigration in Colombo. However, we recommend you discuss this with your AIESEC contact before your visa expires to avoid extra fees or delays.',
+    },
+    {
+      id: 'visa-3',
+      question: 'Do I need a visa to intern or teach in Sri Lanka?',
+      answer: 'Yes, for opportunities upto 6months you can apply for Business ETA using the official government website. You will be guided and provided with necessary documentation from the hosting AIESEC entity, You can obtain Business ETA within only 2-3 days. For any duration more than 6months you will have to go for resident VISA, the hosting AIESEC entity will take full responsibility and handle your process which takes approximately 30 days, you will be requested to submit Passport Copy, Criminal Clearance Report and there will be an extension within a month after your arrival.',
+    },
+  ],
+  food: [
+    {
+      id: 'food-1',
+      question: 'Is Sri Lankan food spicy?',
+      answer: 'Yes, most Sri Lankan dishes are flavorful and a bit spicy, but don\'t worry! You\'ll always find milder options, and AIESEC members can suggest local spots that suit your taste.',
+    },
+    {
+      id: 'food-2',
+      question: 'Can I find vegetarian or vegan food easily?',
+      answer: 'Absolutely! Many Sri Lankan dishes are naturally vegetarian. You\'ll also find plenty of restaurants and cafes in cities offering vegan options.',
+    },
+  ],
+  lifestyle: [
+    {
+      id: 'lifestyle-1',
+      question: 'What kind of clothes should I bring?',
+      answer: 'Sri Lanka is warm and tropical, so light, breathable clothes are ideal. For temple visits or religious events, bring something modest that covers shoulders and knees. And bring corporate clothing and casual office wear for official needs.',
+    },
+    {
+      id: 'lifestyle-2',
+      question: 'Is it safe to go out at night?',
+      answer: 'Most areas are safe, but it\'s always better to go out in groups and avoid isolated places late at night. AIESEC members can advise on safe local spots.',
+    },
+    {
+      id: 'lifestyle-3',
+      question: 'What is the common accommodation cost?',
+      answer: 'A proper accommodation place with required facilities will usually cost ranging from 130-170 USD per month based on the facilities and preferences of yours. In most cases the accommodation is provided and covered by the companies if not the hosting AIESEC entity will help you finding a place with your preferences and you can cover the accommodation costs from your salary.',
+    },
+  ],
+  travel: [
+    {
+      id: 'travel-1',
+      question: 'How can I travel around Sri Lanka?',
+      answer: 'You can use buses, trains, or ride-hailing apps like PickMe and Uber. They\'re affordable and convenient for volunteers.',
+    },
+    {
+      id: 'travel-2',
+      question: 'What are the must-visit places during my stay?',
+      answer: 'Don\'t miss places like Ella, Sigiriya, Kandy, and the southern beaches. AIESEC often helps organize weekend trips for volunteers to explore these beautiful spots.',
+    },
+  ],
+  aiesecSupport: [
+    {
+      id: 'aiesec-1',
+      question: 'Who will help me after I arrive in Sri Lanka?',
+      answer: 'An AIESEC buddy or host will meet you upon arrival and guide you through the first few days, including accommodation, transportation, and local tips.',
+    },
+    {
+      id: 'aiesec-2',
+      question: 'What if I face any issues during my project?',
+      answer: 'AIESEC will always be there for you. You can contact your EP buddy or the AIESEC team at any time, they\'ll help you resolve any problem quickly.',
+    },
+  ],
+};
 
 const FAQSection = () => {
+  const isMobile = useIsMobile();
+  const [selectedCategory, setSelectedCategory] = useState('visa');
 
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/30">
@@ -73,21 +110,175 @@ const FAQSection = () => {
           </p>
         </div>
 
-        {/* FAQ Accordion */}
-        <Card className="testimonial-card">
-          <CardContent className="p-6">
-            <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq) => (
-                <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
-                  <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+        {/* FAQ Tabs */}
+        <Card className="testimonial-card p-0">
+          <CardContent className="p-[20px]">
+            {isMobile ? (
+              <>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-full mb-6">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="visa">VISA</SelectItem>
+                    <SelectItem value="food">Food</SelectItem>
+                    <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                    <SelectItem value="travel">Travel</SelectItem>
+                    <SelectItem value="aiesecSupport">AIESEC Support</SelectItem>
+                  </SelectContent>
+                </Select>
+                {selectedCategory === 'visa' && (
+                  <Accordion type="single" collapsible className="w-full mt-6">
+                    {faqCategories.visa.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+                {selectedCategory === 'food' && (
+                  <Accordion type="single" collapsible className="w-full mt-6">
+                    {faqCategories.food.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+                {selectedCategory === 'lifestyle' && (
+                  <Accordion type="single" collapsible className="w-full mt-6">
+                    {faqCategories.lifestyle.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+                {selectedCategory === 'travel' && (
+                  <Accordion type="single" collapsible className="w-full mt-6">
+                    {faqCategories.travel.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+                {selectedCategory === 'aiesecSupport' && (
+                  <Accordion type="single" collapsible className="w-full mt-6">
+                    {faqCategories.aiesecSupport.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+              </>
+            ) : (
+              <Tabs defaultValue="visa" className="w-full">
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="visa">VISA</TabsTrigger>
+                  <TabsTrigger value="food">Food</TabsTrigger>
+                  <TabsTrigger value="lifestyle">Lifestyle</TabsTrigger>
+                  <TabsTrigger value="travel">Travel</TabsTrigger>
+                  <TabsTrigger value="aiesecSupport">AIESEC Support</TabsTrigger>
+                </TabsList>
+                <TabsContent value="visa" className="mt-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqCategories.visa.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+                <TabsContent value="food" className="mt-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqCategories.food.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+                <TabsContent value="lifestyle" className="mt-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqCategories.lifestyle.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+                <TabsContent value="travel" className="mt-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqCategories.travel.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+                <TabsContent value="aiesecSupport" className="mt-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqCategories.aiesecSupport.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border-border/50">
+                        <AccordionTrigger className="text-left hover:text-primary hover:no-underline transition-colors duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed pt-4">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
         </Card>
 
