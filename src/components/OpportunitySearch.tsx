@@ -12,7 +12,7 @@ import { DateRangePicker } from './CalanderInputComponent';
 export interface Opportunity {
   id: string;
   title: string;
-  location: string;
+  committee: string;
   date: string;
   duration: string;
   participants: string;
@@ -32,6 +32,10 @@ async function fetchOpportunities(filters: {
   startOfEndDateRange: string;
   endOfEndDateRange: string;
   category: string;
+  sdg?: string[];
+  committee?: string[];
+  workField?: string[];
+  background?: string[];
 }): Promise<Opportunity[]> {
   let page = 1;
   const perPage = 1000;
@@ -46,7 +50,8 @@ async function fetchOpportunities(filters: {
 
   while (true) {
     const query = `query {
-      opportunities(page: ${page}, per_page: ${perPage}, filters: {
+      opportunities(page: ${page}, per_page: ${perPage}, 
+      filters: {
         status: "open",
         committee: 1623,
         earliest_start_date: {
@@ -57,7 +62,11 @@ async function fetchOpportunities(filters: {
           from: "${filters.startOfEndDateRange}",
           to: "${filters.endOfEndDateRange}"
         },
-        ${filters.category ? `programmes: ${categoryMap[filters.category] || 0},` : ''}
+        ${filters.category ? `programmes: [${categoryMap[filters.category] || 0}],` : ''}
+        ${filters.sdg && filters.sdg.length > 0 ? `sdg_goals: [${filters.sdg.join(', ')}],` : ''}
+        ${filters.committee && filters.committee.length > 0 ? `committee_scope: [${filters.committee.join(', ')}],` : ''}
+        ${filters.background && filters.background.length > 0 ? `background_ids: [${filters.background.join(', ')}],` : ''}
+        ${filters.workField && filters.workField.length > 0 ? `sub_products: [${filters.workField.join(', ')}],` : ''}
       }) {
         data {
           id
@@ -80,6 +89,8 @@ async function fetchOpportunities(filters: {
       }
     }`;
 
+    console.log(query);
+
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -88,6 +99,7 @@ async function fetchOpportunities(filters: {
       },
       body: JSON.stringify({ query }),
     });
+    console.log("response",response);
 
     if (!response.ok) {
       console.error("GraphQL request failed with HTTP code:", response.status);
@@ -111,6 +123,7 @@ async function fetchOpportunities(filters: {
     }
 
     const opportunities = data?.data?.opportunities?.data || [];
+    console.log("opportunities", opportunities);
     const paging = data?.data?.opportunities?.paging;
 
     const mapped: Opportunity[] = opportunities
@@ -123,6 +136,7 @@ async function fetchOpportunities(filters: {
           const diffInMs = endDate.getTime() - startDate.getTime();
           const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
+          console.log("start end diffinM ", startDate, endDate, diffInMs, diffInMs);
           if (diffInDays >= 7) {
             const weeks = Math.round(diffInDays / 7);
             duration = `${weeks} week${weeks > 1 ? 's' : ''}`;
@@ -132,6 +146,7 @@ async function fetchOpportunities(filters: {
         }
 
         const program = op.programmes?.[0]?.short_name_display;
+        console.log("program",program);
         let programSegment: string;
         switch (program) {
           case 'GTa':
@@ -150,7 +165,7 @@ async function fetchOpportunities(filters: {
         return {
           id: op.id,
           title: op.title,
-          location: op.home_lc?.name || 'Unknown',
+          committee: op.home_lc?.name || 'Unknown',
           date: op.slots?.[0]?.start_date || '',
           duration,
           participants: `${op.openings} spots`,
@@ -185,69 +200,58 @@ const OpportunitySearch = () => {
   const [filteredResults, setFilteredResults] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState('');
+  const [committee, setLocation] = useState<string[]>([]);
   const [duration, setDuration] = useState('');
   const [activeTab, setActiveTab] = useState('GV');
-  const [sdg, setSdg] = useState('');
-  const [background, setBackground] = useState('');
-  const [workfield, setWorkfield] = useState('');
+  const [sdg, setSdg] = useState<string[]>([]);
+  const [background, setBackground] = useState<string[]>([]);
+  const [workField, setWorkfield] = useState<string[]>([]);
   const [startOfStartDateRange, setStartOfStartDateRange] = useState('');
   const [endOfStartDateRange, setEndOfStartDateRange] = useState('');
   const [startOfEndDateRange, setStartOfEndDateRange] = useState('');
   const [endOfEndDateRange, setEndOfEndDateRange] = useState('');
 
   const sdgOptions = [
-    { value: 'no-poverty', label: 'No Poverty' },
-    { value: 'zero-hunger', label: 'Zero Hunger' },
-    { value: 'good-health', label: 'Good Health' },
-    { value: 'quality-education', label: 'Quality Education' },
-    { value: 'gender-equality', label: 'Gender Equality' },
-    { value: 'clean-water', label: 'Clean Water' },
-    { value: 'affordable-energy', label: 'Affordable Energy' },
-    { value: 'decent-work', label: 'Decent Work' },
-    { value: 'industry-innovation', label: 'Industry Innovation' },
-    { value: 'reduced-inequalities', label: 'Reduced Inequalities' },
-    { value: 'sustainable-cities', label: 'Sustainable Cities' },
-    { value: 'responsible-consumption', label: 'Responsible Consumption' },
-    { value: 'climate-action', label: 'Climate Action' },
-    { value: 'life-below-water', label: 'Life Below Water' },
-    { value: 'life-on-land', label: 'Life on Land' },
-    { value: 'peace-justice', label: 'Peace Justice' },
-    { value: 'partnerships-for-goals', label: 'Partnerships for Goals' },
+    { value: '11101', label: 'No Poverty' },
+    { value: '11102', label: 'Zero Hunger' },
+    { value: '11103', label: 'Good Health' },
+    { value: '11104', label: 'Quality Education' },
+    { value: '11105', label: 'Gender Equality' },
+    { value: '11106', label: 'Clean Water' },
+    { value: '11107', label: 'Affordable Energy' },
+    { value: '11108', label: 'Decent Work' },
+    { value: '11109', label: 'Industry Innovation' },
+    { value: '11110', label: 'Reduced Inequalities' },
+    { value: '11111', label: 'Sustainable Cities' },
+    { value: '11112', label: 'Responsible Consumption' },
+    { value: '11113', label: 'Climate Action' },
+    { value: '11114', label: 'Life Below Water' },
+    { value: '11115', label: 'Life on Land' },
+    { value: '11116', label: 'Peace Justice' },
+    { value: '11117', label: 'Partnerships for Goals' },
   ];
 
   const workFieldOptions = [
-    { value: 'business-administration', label: 'Business Administration' },
-    { value: 'business-analyst', label: 'Business Analyst' },
-    { value: 'business-development', label: 'Business Development' },
-    { value: 'content-creator', label: 'Content Creator' },
-    { value: 'customer-service', label: 'Customer Service' },
-    { value: 'data-analyst', label: 'Data Analyst' },
-    { value: 'digital-marketing', label: 'Digital Marketing' },
-    { value: 'finance', label: 'Finance' },
-    { value: 'graphic-designer', label: 'Graphic Designer' },
-    { value: 'guest-relations', label: 'Guest Relations Specialist' },
-    { value: 'hr-recruitment', label: 'HR/Recruitment' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'project-management', label: 'Project Management' },
-    { value: 'receptionist', label: 'Receptionist' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'software-engineer', label: 'Software Engineer' },
-    { value: 'ui-ux-designer', label: 'UI/UX Designer' },
-    { value: 'web-developer', label: 'Web Developer' },
+    { value: '54', label: 'Business Administration' },
+    { value: '55', label: 'Information Technology' },
+    { value: '56', label: 'Marketing' },
+    { value: '57', label: 'Engineering' },
+    { value: '58', label: 'Other' },
+    { value: '60', label: 'Business Development' },
+    { value: '59', label: 'Finance' }
   ];
 
   const locationOptions = [
-    { value: 'COLOMBO CENTRAL', label: 'Colombo Central' },
-    { value: 'COLOMBO NORTH', label: 'Colombo North' },
-    { value: 'COLOMBO SOUTH', label: 'Colombo South' },
-    { value: 'KANDY', label: 'Kandy' },
-    { value: 'NIBM', label: 'NIBM' },
-    { value: 'NSBM', label: 'NSBM' },
-    { value: 'RAJARATA', label: 'Rajarata' },
-    { value: 'RUHUNA', label: 'Ruhuna' },
-    { value: 'SLIIT', label: 'SLIIT' },
-    { value: 'USJ', label: 'USJ' },
+    { value: '222', label: 'Colombo Central' },
+    { value: '872', label: 'Colombo North' },
+    { value: '1340', label: 'Colombo South' },
+    { value: '2204', label: 'Kandy' },
+    { value: '4535', label: 'NIBM' },
+    { value: '2186', label: 'NSBM' },
+    { value: '5490', label: 'Rajarata' },
+    { value: '2175', label: 'Ruhuna' },
+    { value: '2188', label: 'SLIIT' },
+    { value: '221', label: 'USJ' }
   ];
 
   const durationOptions = [
@@ -297,6 +301,7 @@ const OpportunitySearch = () => {
 
     setError(null);
     setLoading(true);
+    console.log(workField)
 
     try {
       const apiData = await fetchOpportunities({
@@ -305,9 +310,20 @@ const OpportunitySearch = () => {
         startOfEndDateRange,
         endOfEndDateRange,
         category,
+        sdg,
+        committee,
+        workField,
+        background,
       });
+      console.log("apidata start of start",apiData[startOfStartDateRange])
+      console.log("apidata end of start",apiData[endOfStartDateRange])
+      console.log("apidata start of end",apiData[startOfEndDateRange])
+      console.log("apidata end of end",apiData[endOfEndDateRange])
       setResults(apiData);
+      console.log("results",results);
       setFilteredResults(apiData);
+      console.log("")
+      console.log("filtered results before",apiData);
     } catch (err) {
       console.error('Error fetching API data:', err);
       setError('Failed to fetch opportunities. Please try again.');
@@ -348,11 +364,13 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+                            console.log("filtered results after", filteredResults);
+
                           }
                         }
                       }}
@@ -415,9 +433,8 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
-
-                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg} onSelect={setSdg} />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={(selectedIds) => setLocation(selectedIds)} />
+                  <DropdownComponent label="Select SDG Goal (Optional)" options={sdgOptions} selectedOption={sdg}   onSelect={(selectedIds) => setSdg(selectedIds)} />
 
                   <Button
                     onClick={() => handleSearch('GV')}
@@ -473,11 +490,13 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+                           console.log("filtered results after", filteredResults);
+
                           }
                         }
                       }}
@@ -540,11 +559,12 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={(selectedIds) => setLocation(selectedIds)} />
 
-                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
 
-                  <DropdownComponent label="Select Work Field (Optional)" options={workFieldOptions} selectedOption={workfield} onSelect={setWorkfield} />
+                  <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={(selectedIds) => setBackground(selectedIds)} />
+
+                  <DropdownComponent label="Select Work Field (Optional)" options={workFieldOptions} selectedOption={workField} onSelect={(selectedIds) => setWorkfield(selectedIds)} />
 
                   <Button
                     onClick={() => handleSearch('GTa')}
@@ -600,11 +620,12 @@ const OpportunitySearch = () => {
                           } else {
                             const filtered = results.filter(opportunity =>
                               opportunity.title.toLowerCase().includes(query.toLowerCase()) ||
-                              opportunity.location.toLowerCase().includes(query.toLowerCase()) ||
+                              opportunity.committee.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.category.toLowerCase().includes(query.toLowerCase()) ||
                               opportunity.description.toLowerCase().includes(query.toLowerCase())
                             );
                             setFilteredResults(filtered);
+
                           }
                         }
                       }}
@@ -625,6 +646,7 @@ const OpportunitySearch = () => {
                         const month = String(date.getMonth() + 1).padStart(2, '0')
                         const day = String(date.getDate()).padStart(2, '0')
                         setStartOfStartDateRange(`${year}-${month}-${day}`)
+                        console.log("Input - Start Date Range - start Date:", startOfStartDateRange); // ✅ log here
                       } else {
                         setStartOfStartDateRange('')
                       }
@@ -667,7 +689,7 @@ const OpportunitySearch = () => {
                     }}
                   />
 
-                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={location} onSelect={setLocation} />
+                  <DropdownComponent label="Select Local Entity (Optional)" options={locationOptions} selectedOption={committee} onSelect={setLocation} />
 
                   <DropdownComponent label="Select Background (Optional)" options={backgroundOptions} selectedOption={background} onSelect={setBackground} />
 
